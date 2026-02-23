@@ -11,7 +11,6 @@ body{margin:0;font-family:system-ui,-apple-system,"Sarabun",sans-serif;backgroun
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:12px 0}
 h2{margin:0 0 10px;font-size:18px}
 label{display:block;margin:12px 0 6px;color:var(--muted);font-size:13px}
-.req{ color: var(--danger); font-weight: 900; margin-left: 4px; }
 input,select,textarea{
   width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--line);
   background:#0f0f12;color:var(--text);outline:none
@@ -29,3 +28,4 @@ textarea{min-height:90px;resize:vertical}
 .hr{height:1px;background:var(--line);margin:14px 0}
 .ok{color:#86efac}
 .err{color:#fca5a5}
+.req{ color: var(--danger); font-weight: 900; margin-left: 4px; }
