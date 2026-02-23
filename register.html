@@ -31,6 +31,24 @@
     <label>จังหวัด</label>
     <input id="province" placeholder="เช่น กรุงเทพฯ">
 
+    <label>ชื่อธนาคาร <span class="req">*</span></label>
+    <input id="bankName" placeholder="เช่น KBank / SCB" required>
+
+    <label>เลขที่บัญชี <span class="req">*</span></label>
+    <input id="bankAccountNo" placeholder="เช่น 123-4-56789-0" required>
+
+    <label>ชื่อบัญชี (ตามสมุด) <span class="req">*</span></label>
+    <input id="bankAccountName" placeholder="ชื่อ-นามสกุล" required>
+
+    <label>อีเมล <span class="req">*</span></label>
+    <input id="eMail" placeholder="name@email.com" inputmode="email" required>
+
+    <label>รูปสมุดบัญชี (ไม่บังคับ)</label>
+    <input id="bookBankPhoto" type="file" accept="image/*">
+
+    <label>รูปบัตรประชาชน (ไม่บังคับ)</label>
+    <input id="idPhoto" type="file" accept="image/*">
+
     <div class="hr"></div>
     <button class="btn primary" onclick="submitRegister()">บันทึก</button>
     <div style="height:10px"></div>
