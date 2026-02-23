@@ -19,29 +19,29 @@
   <div class="card">
     <div class="mini">UserId: <span id="userId">-</span></div>
 
-    <label>ชื่อ</label>
+    <label>ชื่อ <span class="req">*</span></label>
     <input id="name" placeholder="ชื่อจริง">
 
-    <label>นามสกุล</label>
+    <label>นามสกุล <span class="req">*</span></label>
     <input id="lastName" placeholder="นามสกุล">
 
-    <label>เบอร์โทร</label>
+    <label>เบอร์โทร <span class="req">*</span></label>
     <input id="phone" placeholder="08xxxxxxxx" inputmode="tel">
 
-    <label>จังหวัด</label>
+    <label>จังหวัด <span class="req">*</span></label>
     <input id="province" placeholder="เช่น กรุงเทพฯ">
 
     <label>ชื่อธนาคาร <span class="req">*</span></label>
-    <input id="bankName" placeholder="เช่น KBank / SCB" required>
+    <input id="bankName" placeholder="เช่น KBank / SCB">
 
     <label>เลขที่บัญชี <span class="req">*</span></label>
-    <input id="bankAccountNo" placeholder="เช่น 123-4-56789-0" required>
+    <input id="bankAccountNo" placeholder="เช่น 123-4-56789-0">
 
     <label>ชื่อบัญชี (ตามสมุด) <span class="req">*</span></label>
-    <input id="bankAccountName" placeholder="ชื่อ-นามสกุล" required>
+    <input id="bankAccountName" placeholder="ชื่อ-นามสกุล">
 
     <label>อีเมล <span class="req">*</span></label>
-    <input id="eMail" placeholder="name@email.com" inputmode="email" required>
+    <input id="eMail" placeholder="name@email.com" inputmode="email">
 
     <label>รูปสมุดบัญชี (ไม่บังคับ)</label>
     <input id="bookBankPhoto" type="file" accept="image/*">
@@ -61,7 +61,6 @@
 <script src="liff-starter.js"></script>
 
 <script>
-
 function fileToDataUrl_(file){
   return new Promise((resolve) => {
     if (!file) return resolve("");
@@ -71,25 +70,22 @@ function fileToDataUrl_(file){
     reader.readAsDataURL(file);
   });
 }
-  
+
 async function submitRegister(){
   try {
     const p = window.__LIFF_PROFILE__;
     if (!p) return toast("LIFF ยังไม่พร้อม กรุณาเปิดใน LINE", false);
 
-    // ===== required เดิม =====
     const name = document.getElementById("name")?.value.trim() || "";
     const lastName = document.getElementById("lastName")?.value.trim() || "";
     const phone = document.getElementById("phone")?.value.trim() || "";
     const province = document.getElementById("province")?.value.trim() || "";
 
-    // ===== required ที่คุณบอกว่าหาย =====
     const bankName = document.getElementById("bankName")?.value.trim() || "";
     const bankAccountNo = document.getElementById("bankAccountNo")?.value.trim() || "";
     const bankAccountName = document.getElementById("bankAccountName")?.value.trim() || "";
     const eMail = document.getElementById("eMail")?.value.trim() || "";
 
-    // ===== validate required =====
     const missing = [];
     if (!name) missing.push("ชื่อ");
     if (!lastName) missing.push("นามสกุล");
@@ -100,42 +96,27 @@ async function submitRegister(){
     if (!bankAccountName) missing.push("ชื่อบัญชี");
     if (!eMail) missing.push("อีเมล");
 
-    if (missing.length){
-      return toast("กรุณากรอกให้ครบ: " + missing.join(", "), false);
-    }
+    if (missing.length) return toast("กรุณากรอกให้ครบ: " + missing.join(", "), false);
 
-    // ===== optional images (เลือกจากอัลบั้ม) =====
     const bookFile = document.getElementById("bookBankPhoto")?.files?.[0] || null;
     const idFile   = document.getElementById("idPhoto")?.files?.[0] || null;
 
-    const bookBankPhoto = await fileToDataUrl_(bookFile); // "" ถ้าไม่เลือก
-    const idPhoto = await fileToDataUrl_(idFile);         // "" ถ้าไม่เลือก
+    const bookBankPhoto = await fileToDataUrl_(bookFile);
+    const idPhoto = await fileToDataUrl_(idFile);
 
-    // ===== payload ที่ส่งเข้า Apps Script =====
     const payload = {
       userId: p.userId,
       displayName: p.displayName || "",
       pictureUrl: p.pictureUrl || "",
-
-      // required เดิม
       name, lastName, phone, province,
-
-      // required ใหม่
       bankName, bankAccountNo, bankAccountName, eMail,
-
-      // optional รูป (ส่งเป็น dataURL ให้หลังบ้านอัปโหลด)
-      bookBankPhoto,
-      idPhoto,
-
+      bookBankPhoto, idPhoto,
       source: "user"
     };
 
     const r = await apiPost("members", "upsert", payload);
-    if (r && r.ok) {
-      toast("บันทึกสำเร็จ ✅ (row " + r.row + ")", true);
-    } else {
-      toast("บันทึกไม่สำเร็จ: " + (r?.error || "unknown"), false);
-    }
+    if (r && r.ok) toast("บันทึกสำเร็จ ✅ (row " + r.row + ")", true);
+    else toast("บันทึกไม่สำเร็จ: " + (r?.error || "unknown"), false);
 
   } catch (err) {
     toast("บันทึกไม่สำเร็จ: " + String(err), false);
