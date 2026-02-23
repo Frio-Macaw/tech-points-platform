@@ -59,30 +59,87 @@
 
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <script src="liff-starter.js"></script>
+
 <script>
+
+function fileToDataUrl_(file){
+  return new Promise((resolve) => {
+    if (!file) return resolve("");
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onerror = () => resolve("");
+    reader.readAsDataURL(file);
+  });
+}
+  
 async function submitRegister(){
-  const p = window.__LIFF_PROFILE__;
-  if (!p) return toast("ยังไม่พร้อมใช้งาน LIFF", false);
+  try {
+    const p = window.__LIFF_PROFILE__;
+    if (!p) return toast("LIFF ยังไม่พร้อม กรุณาเปิดใน LINE", false);
 
-  const email2El = document.getElementById("email_2");
-  const email2 = (email2El ? email2El.value.trim() : "") || (window.__LIFF_EMAIL__ || "");
+    // ===== required เดิม =====
+    const name = document.getElementById("name")?.value.trim() || "";
+    const lastName = document.getElementById("lastName")?.value.trim() || "";
+    const phone = document.getElementById("phone")?.value.trim() || "";
+    const province = document.getElementById("province")?.value.trim() || "";
 
-  const payload = {
-    userId: p.userId,
-    displayName: p.displayName || "",
-    pictureUrl: p.pictureUrl || "",
-    name: document.getElementById("name").value.trim(),
-    lastName: document.getElementById("lastName").value.trim(),
-    phone: document.getElementById("phone").value.trim(),
-    province: document.getElementById("province").value.trim(),
+    // ===== required ที่คุณบอกว่าหาย =====
+    const bankName = document.getElementById("bankName")?.value.trim() || "";
+    const bankAccountNo = document.getElementById("bankAccountNo")?.value.trim() || "";
+    const bankAccountName = document.getElementById("bankAccountName")?.value.trim() || "";
+    const eMail = document.getElementById("eMail")?.value.trim() || "";
 
-    // ✅ เพิ่มบรรทัดนี้: จะไปลงชีทคอลัมน์หัวข้อ "eMail_2"
-    eMail_2: email2
-  };
+    // ===== validate required =====
+    const missing = [];
+    if (!name) missing.push("ชื่อ");
+    if (!lastName) missing.push("นามสกุล");
+    if (!phone) missing.push("เบอร์โทร");
+    if (!province) missing.push("จังหวัด");
+    if (!bankName) missing.push("ชื่อธนาคาร");
+    if (!bankAccountNo) missing.push("เลขที่บัญชี");
+    if (!bankAccountName) missing.push("ชื่อบัญชี");
+    if (!eMail) missing.push("อีเมล");
 
-  const r = await apiPost("members", "upsert", payload);
-  if (r.ok) toast("บันทึกสำเร็จ ✅ (row " + r.row + ")", true);
-  else toast("บันทึกไม่สำเร็จ: " + (r.error || "unknown"), false);
+    if (missing.length){
+      return toast("กรุณากรอกให้ครบ: " + missing.join(", "), false);
+    }
+
+    // ===== optional images (เลือกจากอัลบั้ม) =====
+    const bookFile = document.getElementById("bookBankPhoto")?.files?.[0] || null;
+    const idFile   = document.getElementById("idPhoto")?.files?.[0] || null;
+
+    const bookBankPhoto = await fileToDataUrl_(bookFile); // "" ถ้าไม่เลือก
+    const idPhoto = await fileToDataUrl_(idFile);         // "" ถ้าไม่เลือก
+
+    // ===== payload ที่ส่งเข้า Apps Script =====
+    const payload = {
+      userId: p.userId,
+      displayName: p.displayName || "",
+      pictureUrl: p.pictureUrl || "",
+
+      // required เดิม
+      name, lastName, phone, province,
+
+      // required ใหม่
+      bankName, bankAccountNo, bankAccountName, eMail,
+
+      // optional รูป (ส่งเป็น dataURL ให้หลังบ้านอัปโหลด)
+      bookBankPhoto,
+      idPhoto,
+
+      source: "user"
+    };
+
+    const r = await apiPost("members", "upsert", payload);
+    if (r && r.ok) {
+      toast("บันทึกสำเร็จ ✅ (row " + r.row + ")", true);
+    } else {
+      toast("บันทึกไม่สำเร็จ: " + (r?.error || "unknown"), false);
+    }
+
+  } catch (err) {
+    toast("บันทึกไม่สำเร็จ: " + String(err), false);
+  }
 }
 </script>
 </body>
