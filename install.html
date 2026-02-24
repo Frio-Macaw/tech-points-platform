@@ -49,17 +49,34 @@
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <script src="liff-starter.js"></script>
 <script>
+function fileToDataUrl_(file){
+  return new Promise((resolve) => {
+    if (!file) return resolve("");
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onerror = () => resolve("");
+    reader.readAsDataURL(file);
+  });
+}
+
 async function submitInstall(){
   const p = await waitProfile_();
   if (!p) return toast("LIFF ยังไม่พร้อม กรุณาลองใหม่", false);
 
+  const dealer = document.getElementById("dealer").value.trim();
+  const btu = document.getElementById("btu").value;
+  const serialNumber = document.getElementById("serialNumber").value.trim();
+
+  const snFile = document.getElementById("serialNumberPhoto")?.files?.[0] || null;
+  const inFile = document.getElementById("installPhoto")?.files?.[0] || null;
+
   const payload = {
     userId: p.userId,
-    dealer: document.getElementById("dealer").value.trim(),
-    btu: document.getElementById("btu").value,
-    serialNumber: document.getElementById("serialNumber").value.trim(),
+    dealer,
+    btu,
+    serialNumber,
     serialNumberPhoto: await fileToDataUrl_(snFile),
-    installPhoto: await fileToDataUrl_(inFile)  
+    installPhoto: await fileToDataUrl_(inFile)
   };
 
   const r = await apiPost("install", "create", payload);
