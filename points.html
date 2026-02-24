@@ -37,8 +37,8 @@
 <script src="liff-starter.js"></script>
 <script>
 async function loadBalance(){
-  const p = window.__LIFF_PROFILE__;
-  if (!p) return toast("ยังไม่พร้อมใช้งาน LIFF", false);
+  const p = await waitProfile_();
+  if (!p) return toast("LIFF ยังไม่พร้อม กรุณาลองใหม่", false);
 
   const r = await apiPost("points", "balance", { userId: p.userId });
   if (!r.ok) return toast("โหลดไม่สำเร็จ: " + (r.error||"unknown"), false);
