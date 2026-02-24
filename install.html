@@ -50,8 +50,8 @@
 <script src="liff-starter.js"></script>
 <script>
 async function submitInstall(){
-  const p = window.__LIFF_PROFILE__;
-  if (!p) return toast("ยังไม่พร้อมใช้งาน LIFF", false);
+  const p = await waitProfile_();
+  if (!p) return toast("LIFF ยังไม่พร้อม กรุณาลองใหม่", false);
 
   const payload = {
     userId: p.userId,
