@@ -57,7 +57,9 @@ async function submitInstall(){
     userId: p.userId,
     dealer: document.getElementById("dealer").value.trim(),
     btu: document.getElementById("btu").value,
-    serialNumber: document.getElementById("serialNumber").value.trim()
+    serialNumber: document.getElementById("serialNumber").value.trim(),
+    serialNumberPhoto: await fileToDataUrl_(snFile),
+    installPhoto: await fileToDataUrl_(inFile)  
   };
 
   const r = await apiPost("install", "create", payload);
