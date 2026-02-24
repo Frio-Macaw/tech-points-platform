@@ -58,6 +58,16 @@ async function liffInit() {
   }
 }
 
+// ===== WAIT PROFILE (กันกดเร็ว ตอน LIFF ยัง init ไม่เสร็จ) =====
+async function waitProfile_(ms = 5000){
+  const start = Date.now();
+  while (!window.__LIFF_PROFILE__) {
+    if (Date.now() - start > ms) return null;
+    await new Promise(r => setTimeout(r, 100));
+  }
+  return window.__LIFF_PROFILE__;
+}
+
 // ===== API POST =====
 async function apiPost(sheet, action, payload) {
   const url = `${WEB_APP_URL}?sheet=${encodeURIComponent(sheet)}&action=${encodeURIComponent(action)}`;
