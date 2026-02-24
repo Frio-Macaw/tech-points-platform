@@ -75,6 +75,22 @@ function fileToDataUrl_(file){
   });
 }
 
+function normalizeDriveImgUrl_(url){
+  const s = String(url || "").trim();
+  if (!s) return "";
+
+  // case: https://drive.google.com/open?id=FILEID
+  let m = s.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (m && m[1]) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
+
+  // case: https://drive.google.com/file/d/FILEID/view?...
+  m = s.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (m && m[1]) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
+
+  // เผื่อเป็นลิงก์ตรงอยู่แล้ว
+  return s;
+}
+  
 async function loadDraftFromSheet_(){
   const p = await waitProfile_();
   if (!p) return;
@@ -104,13 +120,13 @@ async function loadDraftFromSheet_(){
   // โชว์รูปเดิมจาก Drive URL (ถ้ามี)
   const prevBook = document.getElementById("prevBook");
   if (prevBook && d.bookBankPhoto) {
-    prevBook.src = String(d.bookBankPhoto);
+    prevBook.src = normalizeDriveImgUrl_(d.bookBankPhoto);
     prevBook.style.display = "block";
   }
 
   const prevId = document.getElementById("prevId");
   if (prevId && d.idPhoto) {
-    prevId.src = String(d.idPhoto);
+    prevId.src = normalizeDriveImgUrl_(d.idPhoto);
     prevId.style.display = "block";
   }
 
