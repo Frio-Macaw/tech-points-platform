@@ -73,7 +73,7 @@ function fileToDataUrl_(file){
 
 async function submitRegister(){
   try {
-    const p = window.__LIFF_PROFILE__;
+    const p = await waitProfile_();
     if (!p) return toast("LIFF ยังไม่พร้อม กรุณาเปิดใน LINE", false);
 
     const name = document.getElementById("name")?.value.trim() || "";
