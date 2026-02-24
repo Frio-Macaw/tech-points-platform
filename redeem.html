@@ -41,8 +41,8 @@
 <script src="liff-starter.js"></script>
 <script>
 async function submitRedeem(){
-  const p = window.__LIFF_PROFILE__;
-  if (!p) return toast("ยังไม่พร้อมใช้งาน LIFF", false);
+  const p = await waitProfile_();
+  if (!p) return toast("LIFF ยังไม่พร้อม กรุณาลองใหม่", false);
 
   const pts = Number(document.getElementById("points").value || 0);
   if (!Number.isFinite(pts) || pts <= 0) return toast("กรอกแต้มให้ถูกต้อง", false);
