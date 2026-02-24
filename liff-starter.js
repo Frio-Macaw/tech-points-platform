@@ -64,7 +64,7 @@ async function apiPost(sheet, action, payload) {
 
   const res = await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    headers: { "Content-Type": "application/json; charset=utf-8" },
     body: JSON.stringify(payload || {})
   });
 
