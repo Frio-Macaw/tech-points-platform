@@ -75,20 +75,23 @@ function fileToDataUrl_(file){
   });
 }
 
-function normalizeDriveImgUrl_(url){
+function driveIdFromUrl_(url){
   const s = String(url || "").trim();
   if (!s) return "";
-
-  // case: https://drive.google.com/open?id=FILEID
   let m = s.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-  if (m && m[1]) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
-
-  // case: https://drive.google.com/file/d/FILEID/view?...
+  if (m && m[1]) return m[1];
   m = s.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-  if (m && m[1]) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
+  if (m && m[1]) return m[1];
+  // เผื่อเก็บเป็น id ตรง ๆ
+  if (/^[a-zA-Z0-9_-]{20,}$/.test(s)) return s;
+  return "";
+}
 
-  // เผื่อเป็นลิงก์ตรงอยู่แล้ว
-  return s;
+function normalizeDriveImgUrl_(url){
+  const id = driveIdFromUrl_(url);
+  if (!id) return String(url || "");
+  // ✅ thumbnail เสถียรสุดใน LIFF/มือถือ
+  return `https://drive.google.com/thumbnail?id=${id}&sz=w1000`;
 }
   
 async function loadDraftFromSheet_(){
