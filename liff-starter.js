@@ -6,8 +6,14 @@ const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzyzubdy2RHBv88vZmy
 async function liffInit() {
   await liff.init({ liffId: LIFF_ID });
 
+  // ✅ บังคับต้องเปิดในแอป LINE เท่านั้น
+  if (!liff.isInClient()) {
+    toast("กรุณาเปิดผ่าน LINE (Rich Menu) เท่านั้น", false);
+    return;
+  }
+
+  // ถ้าอยู่ใน LINE แต่ยังไม่ล็อกอิน (กรณี rare) ค่อย login
   if (!liff.isLoggedIn()) {
-    // แนะนำให้คง redirectUri ไว้ให้กลับมาหน้าเดิม
     liff.login({ redirectUri: window.location.href });
     return;
   }
