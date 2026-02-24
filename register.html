@@ -45,9 +45,13 @@
 
     <label>รูปสมุดบัญชี (ไม่บังคับ)</label>
     <input id="bookBankPhoto" type="file" accept="image/*">
+    <div class="mini">รูปเดิม (ถ้ามี):</div>
+    <img id="prevBook" style="width:100%;max-height:180px;object-fit:cover;border-radius:12px;display:none;margin-top:6px;border:1px solid #26262b;">
 
     <label>รูปบัตรประชาชน (ไม่บังคับ)</label>
     <input id="idPhoto" type="file" accept="image/*">
+    <div class="mini">รูปเดิม (ถ้ามี):</div>
+    <img id="prevId" style="width:100%;max-height:180px;object-fit:cover;border-radius:12px;display:none;margin-top:6px;border:1px solid #26262b;">
 
     <div class="hr"></div>
     <button class="btn primary" onclick="submitRegister()">บันทึก</button>
@@ -71,6 +75,48 @@ function fileToDataUrl_(file){
   });
 }
 
+async function loadDraftFromSheet_(){
+  const p = await waitProfile_();
+  if (!p) return;
+
+  const r = await apiPost("members", "get", { userId: p.userId });
+  if (!r || !r.ok || r.mode !== "found") return;
+
+  const d = r.data || {};
+
+  // เติมค่ากลับเข้า input (ถ้ามี)
+  const setVal = (id, v) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const s = (v === undefined || v === null) ? "" : String(v);
+    if (s.trim() !== "") el.value = s;
+  };
+
+  setVal("name", d.name);
+  setVal("lastName", d.lastName);
+  setVal("phone", d.phone);
+  setVal("province", d.province);
+  setVal("bankName", d.bankName);
+  setVal("bankAccountNo", d.bankAccountNo);
+  setVal("bankAccountName", d.bankAccountName);
+  setVal("eMail", d.eMail);
+
+  // โชว์รูปเดิมจาก Drive URL (ถ้ามี)
+  const prevBook = document.getElementById("prevBook");
+  if (prevBook && d.bookBankPhoto) {
+    prevBook.src = String(d.bookBankPhoto);
+    prevBook.style.display = "block";
+  }
+
+  const prevId = document.getElementById("prevId");
+  if (prevId && d.idPhoto) {
+    prevId.src = String(d.idPhoto);
+    prevId.style.display = "block";
+  }
+
+  toast("โหลดข้อมูลเดิมแล้ว ✅ แก้ไขได้เลย", true);
+}
+  
 async function submitRegister(){
   try {
     const p = await waitProfile_();
@@ -122,6 +168,12 @@ async function submitRegister(){
     toast("บันทึกไม่สำเร็จ: " + String(err), false);
   }
 }
+
+  window.addEventListener("load", () => {
+  // รอ LIFF init จาก liff-starter.js แล้วค่อยโหลด draft
+  setTimeout(() => loadDraftFromSheet_().catch(()=>{}), 300);
+});
+  
 </script>
 </body>
 </html>
