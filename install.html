@@ -43,6 +43,7 @@
     <div style="height:10px"></div>
     <button class="btn" onclick="location.href='index.html'">กลับเมนู</button>
     <div id="toast" class="mini"></div>
+    <div id="resultBox" class="result-box" style="display:none"></div>
   </div>
 </div>
 
@@ -59,13 +60,14 @@ function fileToDataUrl_(file){
   });
 }
 
-function notify_(msg, title = "แจ้งเตือน", autoCloseMs = 0){
-  // ถ้า popup ใช้ได้ -> ใช้ popup
-  if (typeof popup === "function") {
-    return popup(msg, title, autoCloseMs);
-  }
-  // fallback -> ต้องเด้งแน่นอน
-  alert(`${title}\n\n${msg}`);
+function showResult_(type, msg){
+  const box = document.getElementById("resultBox");
+  if (!box) return;
+  box.style.display = "block";
+  box.className = "result-box " + (type === "ok" ? "result-ok" : type === "warn" ? "result-warn" : "result-err");
+  box.textContent = msg;
+  // เลื่อนลงมาดูผลให้เอง
+  box.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
   
 async function submitInstall(){
@@ -97,18 +99,13 @@ async function submitInstall(){
 
 if (r.ok) {
   if (r.rejected) {
-    notify_(
-      "พบข้อมูล Serial Number ซ้ำ ระบบรับข้อมูลไว้แล้ว ⚠️ทีมงานจะตรวจสอบข้อมูลอีกครั้ง",
-      "แจ้งเตือน ⚠️",
-      0
-    );
-    resetInstallForm_();
+    showResult_("warn", "⚠️ ไม่ผ่าน: พบ Serial Number ซ้ำ ระบบรับข้อมูลไว้แล้ว ทีมงานจะตรวจสอบอีกครั้ง");
   } else {
-    notify_("บันทึกเสร็จสิ้นแล้ว ✅", "สำเร็จ ✅", 2500);
-    resetInstallForm_();
+    showResult_("ok", "✅ ผ่าน: บันทึกการลงติดตั้งเรียบร้อยแล้ว");
   }
+  resetInstallForm_();
 } else {
-  notify_("บันทึกไม่สำเร็จ: " + (r.error || "unknown"), "เกิดข้อผิดพลาด ❌", 0);
+  showResult_("err", "❌ บันทึกไม่สำเร็จ: " + (r.error || "unknown"));
 }
 }
 
@@ -121,17 +118,6 @@ function resetInstallForm_(){
 }
   
 </script>
-
-<!-- ✅ Popup Modal -->
-<div id="modalOverlay" class="modal-overlay" onclick="closePopup()">
-  <div class="modal" onclick="event.stopPropagation()">
-    <h3 id="modalTitle">สำเร็จ ✅</h3>
-    <p id="modalMsg">บันทึกเสร็จสิ้นแล้ว</p>
-    <div class="actions">
-      <button class="btn primary" onclick="closePopup()">ตกลง</button>
-    </div>
-  </div>
-</div>
   
 </body>
 </html>
