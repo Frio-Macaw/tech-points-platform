@@ -156,7 +156,7 @@ async function submitInstall(){
   userId: p.userId,
   dealer, btu, serialNumber,
 serialNumberPhoto: await fileToDataUrl_(snFile, { maxW: 2560, quality: 0.92, timeoutMs: 8000 }),
-installPhoto: await fileToDataUrl_(inFile, { maxW: 1400, quality: 0.80, timeoutMs: 8000 })
+installPhoto: await fileToDataUrl_(inFile, { maxW: 1400, quality: 0.80, timeoutMs: 8000 }),
   source: "user"
 };
     // ✅ ไม่ให้รูปพังแล้วบล็อกการส่ง: ถ้าย่อไม่สำเร็จจะเป็น "" อยู่แล้ว
