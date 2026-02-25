@@ -33,10 +33,10 @@
     <input id="serialNumber" placeholder="SN...">
 
     <label>รูป Serial Number (ไม่บังคับ)</label>
-    <input id="serialNumberPhoto" type="file" accept="image/*">
+    <input id="serialNumberPhoto" type="file" accept="image/*" capture="environment">
 
     <label>รูปติดตั้ง (ไม่บังคับ)</label>
-    <input id="installPhoto" type="file" accept="image/*">
+    <input id="installPhoto" type="file" accept="image/*" capture="environment">
 
     <div class="hr"></div>
     <button class="btn primary" onclick="submitInstall()">บันทึก</button>
@@ -66,6 +66,11 @@ async function submitInstall(){
   const dealer = document.getElementById("dealer").value.trim();
   const btu = document.getElementById("btu").value;
   const serialNumber = document.getElementById("serialNumber").value.trim();
+
+    // ✅ ADD: validate required fields
+  if (!dealer) return toast("กรุณากรอก Dealer", false);
+  if (!btu) return toast("กรุณาเลือก BTU", false);
+  if (!serialNumber) return toast("กรุณากรอก Serial Number", false);
 
   const snFile = document.getElementById("serialNumberPhoto")?.files?.[0] || null;
   const inFile = document.getElementById("installPhoto")?.files?.[0] || null;
