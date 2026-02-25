@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Install</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20260225_3">
 </head>
 <body>
 <div class="wrap">
@@ -43,12 +43,12 @@
     <div style="height:10px"></div>
     <button class="btn" onclick="location.href='index.html'">กลับเมนู</button>
     <div id="toast" class="mini"></div>
-    <div id="resultBox" class="result-box" style="display:none"></div>
+    <div id="resultBox" class="result-box"></div>
   </div>
 </div>
 
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-<script src="liff-starter.js?v=20260225_1"></script>
+<script src="liff-starter.js?v=20260225_3"></script>
 <script>
 function fileToDataUrl_(file){
   return new Promise((resolve) => {
@@ -61,52 +61,69 @@ function fileToDataUrl_(file){
 }
 
 function showResult_(type, msg){
-  const box = document.getElementById("resultBox");
-  if (!box) return;
-  box.style.display = "block";
+  let box = document.getElementById("resultBox");
+
+  // ✅ ถ้าไม่มี resultBox ให้สร้างเองและแปะท้าย card
+  if (!box) {
+    const card = document.querySelector(".card");
+    box = document.createElement("div");
+    box.id = "resultBox";
+    box.className = "result-box";
+    if (card) card.appendChild(box);
+    else document.body.appendChild(box);
+  }
+
   box.className = "result-box " + (type === "ok" ? "result-ok" : type === "warn" ? "result-warn" : "result-err");
   box.textContent = msg;
-  // เลื่อนลงมาดูผลให้เอง
+
+  // ✅ ให้เลื่อนมาที่ข้อความเสมอ
   box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+  // fallback กันกรณี CSS/DOM แปลก ๆ
+  toast(msg, type === "ok");
 }
   
 async function submitInstall(){
-  const p = await waitProfile_();
-  if (!p) return toast("LIFF ยังไม่พร้อม กรุณาลองใหม่", false);
+  try{
+    const p = await waitProfile_();
+    if (!p) return showResult_("err", "❌ LIFF ยังไม่พร้อม กรุณาลองใหม่");
 
-  const dealer = document.getElementById("dealer").value.trim();
-  const btu = document.getElementById("btu").value;
-  const serialNumber = document.getElementById("serialNumber").value.trim();
+    const dealer = document.getElementById("dealer").value.trim();
+    const btu = document.getElementById("btu").value;
+    const serialNumber = document.getElementById("serialNumber").value.trim();
 
-    // ✅ ADD: validate required fields
-  if (!dealer) return toast("กรุณากรอก Dealer", false);
-  if (!btu) return toast("กรุณาเลือก BTU", false);
-  if (!serialNumber) return toast("กรุณากรอก Serial Number", false);
+    if (!dealer) return showResult_("err", "❌ กรุณากรอก Dealer");
+    if (!btu) return showResult_("err", "❌ กรุณาเลือก BTU");
+    if (!serialNumber) return showResult_("err", "❌ กรุณากรอก Serial Number");
 
-  const snFile = document.getElementById("serialNumberPhoto")?.files?.[0] || null;
-  const inFile = document.getElementById("installPhoto")?.files?.[0] || null;
+    const snFile = document.getElementById("serialNumberPhoto")?.files?.[0] || null;
+    const inFile = document.getElementById("installPhoto")?.files?.[0] || null;
 
-  const payload = {
-    userId: p.userId,
-    dealer,
-    btu,
-    serialNumber,
-    serialNumberPhoto: await fileToDataUrl_(snFile),
-    installPhoto: await fileToDataUrl_(inFile)
-  };
+    const payload = {
+      userId: p.userId,
+      dealer,
+      btu,
+      serialNumber,
+      serialNumberPhoto: await fileToDataUrl_(snFile),
+      installPhoto: await fileToDataUrl_(inFile)
+    };
 
-  const r = await apiPost("install", "create", payload);
+    const r = await apiPost("install", "create", payload);
 
-if (r.ok) {
-  if (r.rejected) {
-    showResult_("warn", "⚠️ ไม่ผ่าน: พบ Serial Number ซ้ำ ระบบรับข้อมูลไว้แล้ว ทีมงานจะตรวจสอบอีกครั้ง");
-  } else {
-    showResult_("ok", "✅ ผ่าน: บันทึกการลงติดตั้งเรียบร้อยแล้ว");
+    if (r && r.ok) {
+      if (r.rejected) {
+        showResult_("warn", "⚠️ ไม่ผ่าน: พบ Serial Number ซ้ำ ระบบรับข้อมูลไว้แล้ว และทีมงานจะตรวจสอบให้");
+      } else {
+        showResult_("ok", "✅ ผ่าน: บันทึกการลงติดตั้งเรียบร้อยแล้ว");
+      }
+      resetInstallForm_();
+    } else {
+      showResult_("err", "❌ บันทึกไม่สำเร็จ: " + ((r && r.error) ? r.error : "unknown"));
+    }
+
+  } catch(err){
+    showResult_("err", "❌ เกิดข้อผิดพลาด: " + String(err));
   }
-  resetInstallForm_();
-} else {
-  showResult_("err", "❌ บันทึกไม่สำเร็จ: " + (r.error || "unknown"));
-}
 }
 
 function resetInstallForm_(){
