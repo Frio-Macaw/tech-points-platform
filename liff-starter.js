@@ -101,6 +101,25 @@ function toast(msg, ok = true) {
   el.className = ok ? "mini ok" : "mini err";
 }
 
+function popup(msg, title = "สำเร็จ ✅"){
+  const overlay = document.getElementById("modalOverlay");
+  const titleEl = document.getElementById("modalTitle");
+  const msgEl = document.getElementById("modalMsg");
+  if (!overlay || !titleEl || !msgEl) {
+    // fallback ถ้าไม่มี modal บนหน้านั้น
+    alert(msg);
+    return;
+  }
+  titleEl.textContent = title;
+  msgEl.textContent = msg;
+  overlay.style.display = "flex";
+}
+
+function closePopup(){
+  const overlay = document.getElementById("modalOverlay");
+  if (overlay) overlay.style.display = "none";
+}
+
 // ===== START =====
 window.addEventListener("load", () => {
   if (typeof liff === "undefined") {
