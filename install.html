@@ -75,7 +75,7 @@ function showResult_(type, msg){
   box.className = "result-box " + (type === "ok" ? "result-ok" : type === "warn" ? "result-warn" : "result-err");
   box.textContent = msg;
   box.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  toast(msg, type === "ok");
+  //toast(msg, type === "ok");
 }
 
 async function submitInstall(){
