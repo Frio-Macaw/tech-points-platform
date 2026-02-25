@@ -51,8 +51,8 @@ async function submitRedeem(){
   const payload = { userId: p.userId, btu: document.getElementById("btu").value, points: pts };
   const r = await apiPost("redeems", "create", payload);
 
-  if (r.ok) toast(`แลกสำเร็จ ✅ คงเหลือ ${r.balanceAfter}`, true);
-  else toast("แลกไม่สำเร็จ: " + (r.error || "unknown"), false);
+  if (r.ok) popup(`แลกสำเร็จ ✅ คงเหลือ ${r.balanceAfter} แต้ม`);
+  else popup("แลกไม่สำเร็จ: " + (r.error || "unknown"), "เกิดข้อผิดพลาด ❌");
 }
 </script>
 
