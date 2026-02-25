@@ -113,7 +113,7 @@ async function submitInstall(){
       }
       resetInstallForm_();
     } else {
-      showResult_("err", "❌ ไม่ผ่าน: " + (r.rejectReason || "พบ Serial Number ซ้ำ"));
+      showResult_("err", "❌ บันทึกไม่สำเร็จ: " + ((r && r.error) ? r.error : "unknown"));
     }
 
   } catch(err){
