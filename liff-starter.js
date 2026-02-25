@@ -53,12 +53,13 @@ async function liffInit() {
           // ไม่ต้อง toast ก็ได้ เพราะคุณอยากแอบทำหลังบ้าน
           // toast("Email saved", true);
         } else {
-          // ถ้าจะไม่ให้ผู้ใช้เห็น error ก็ comment บรรทัดนี้ได้
-          toast("auto-save email failed: " + (r?.error || "unknown"), false);
+          // ✅ ไม่โชว์อะไรให้ end user เห็น (แอบทำหลังบ้าน)
+          // Logger ฝั่ง browser (optional)
+          console.warn("auto-save email failed:", r?.error || r);
         }
       } catch (err) {
-        // ถ้าจะไม่ให้ผู้ใช้เห็น error ก็ comment บรรทัดนี้ได้
-        toast("auto-save email failed: " + String(err), false);
+          // ✅ ไม่โชว์อะไรให้ end user เห็น
+          console.warn("auto-save email exception:", err);
       }
     }
   }
