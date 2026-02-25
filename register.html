@@ -180,8 +180,8 @@ async function submitRegister(){
     };
 
     const r = await apiPost("members", "upsert", payload);
-    if (r && r.ok) toast("บันทึกสำเร็จ ✅ (row " + r.row + ")", true);
-    else toast("บันทึกไม่สำเร็จ: " + (r?.error || "unknown"), false);
+    if (r && r.ok) popup("บันทึกเสร็จสิ้นแล้ว ✅");
+    else popup("บันทึกไม่สำเร็จ: " + (r?.error || "unknown"), "เกิดข้อผิดพลาด ❌");
 
   } catch (err) {
     toast("บันทึกไม่สำเร็จ: " + String(err), false);
