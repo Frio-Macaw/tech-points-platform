@@ -22,9 +22,16 @@ async function liffInit() {
   const profile = await liff.getProfile();
   window.__LIFF_PROFILE__ = profile;
 
-  // โชว์ในหน้า (ถ้ามี element)
+  // ===== แสดงเฉพาะชื่อ LINE (ซ่อน UserId ทุกหน้า) =====
   const uidEl = document.getElementById("userId");
-  if (uidEl) uidEl.textContent = profile.userId;
+  if (uidEl) {
+    // ยัง set ค่าไว้ได้ (เผื่อ debug) แต่ไม่โชว์ให้ผู้ใช้เห็น
+    uidEl.textContent = profile.userId;
+
+    // ✅ ซ่อนทั้งบรรทัด "UserId: ...." โดยซ่อนกล่อง parent (.mini)
+    const row = uidEl.closest(".mini");
+    if (row) row.style.display = "none";
+  }
 
   const dnEl = document.getElementById("displayName");
   if (dnEl) dnEl.textContent = profile.displayName || "-";
