@@ -50,51 +50,67 @@
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <script src="liff-starter.js?v=20260225_3"></script>
 <script>
+function fileToDataUrlRaw_(file){
+  return new Promise((resolve) => {
+    if (!file) return resolve("");
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onerror = () => resolve("");
+    reader.readAsDataURL(file);
+  });
+}
+
+// ✅ Safe compress: ไม่ค้าง + มี timeout + ถ้าย่อไม่ได้จะคืน "" แล้วส่ง text ต่อได้
 async function fileToDataUrl_(file, opt = {}){
-  try{
-    if (!file) return "";
+  const {
+    maxW = 2000,
+    quality = 0.88,
+    timeoutMs = 8000,      // กันค้างใน LINE webview
+    forceJpeg = true
+  } = opt;
 
-    const {
-      maxW = 2560,          // ความกว้างสูงสุดหลังย่อ
-      quality = 0.9,        // คุณภาพ jpeg (0-1)
-      forceJpeg = true      // แปลงเป็น jpeg เพื่อให้เบาและเสถียร
-    } = opt;
+  if (!file) return "";
 
-    // อ่านไฟล์เป็นรูป
-    const imgUrl = URL.createObjectURL(file);
-    const img = new Image();
-    img.src = imgUrl;
+  // กันรูปไฟล์ใหญ่มาก ๆ (บางเครื่อง 10-20MB) -> ลดโอกาสพัง
+  // ถ้าเกิน 12MB ให้ไม่ส่งรูป (ส่ง text อย่างเดียว)
+  if (file.size && file.size > 12 * 1024 * 1024) return "";
 
-    await new Promise((res, rej)=>{
-      img.onload = res;
-      img.onerror = rej;
-    });
+  const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve(""), timeoutMs));
 
-    // คำนวณ scale (ไม่ขยายเกินของเดิม)
-    const scale = Math.min(1, maxW / img.width);
-    const w = Math.round(img.width * scale);
-    const h = Math.round(img.height * scale);
+  const workPromise = (async () => {
+    try{
+      // 1) อ่านเป็น dataURL ก่อน (เสถียรกว่า blob url ใน LINE บางรุ่น)
+      const dataUrl = await fileToDataUrlRaw_(file);
+      if (!dataUrl) return "";
 
-    const canvas = document.createElement("canvas");
-    canvas.width = w; canvas.height = h;
-    const ctx = canvas.getContext("2d");
+      // 2) โหลดเข้า Image
+      const img = new Image();
+      const loaded = new Promise((res, rej)=>{ img.onload=res; img.onerror=rej; });
+      img.src = dataUrl;
+      await loaded;
 
-    // ช่วยให้ตัวหนังสือคมขึ้น (บางเครื่องเห็นผลชัด)
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = "high";
+      // 3) ย่อ
+      const scale = Math.min(1, maxW / img.width);
+      const w = Math.max(1, Math.round(img.width * scale));
+      const h = Math.max(1, Math.round(img.height * scale));
 
-    ctx.drawImage(img, 0, 0, w, h);
-    URL.revokeObjectURL(imgUrl);
+      const canvas = document.createElement("canvas");
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext("2d");
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(img, 0, 0, w, h);
 
-    if (forceJpeg){
-      return canvas.toDataURL("image/jpeg", quality);
-    } else {
-      // ใช้ type เดิม (ไม่แนะนำถ้าต้องการให้เบา)
+      // 4) export
+      if (forceJpeg) return canvas.toDataURL("image/jpeg", quality);
       return canvas.toDataURL(file.type || "image/png", quality);
+    }catch(_){
+      return "";
     }
-  }catch(_){
-    return "";
-  }
+  })();
+
+  // ✅ ถ้าเกินเวลา -> คืน "" เพื่อไม่บล็อกการยิง API
+  return await Promise.race([workPromise, timeoutPromise]);
 }
 
 function showResult_(type, msg){
@@ -139,14 +155,14 @@ async function submitInstall(){
     const payload = {
   userId: p.userId,
   dealer, btu, serialNumber,
-  // ✅ Serial ต้องซูม 400%: เก็บใหญ่+คุณภาพสูง
-serialNumberPhoto: await fileToDataUrl_(snFile, { maxW: 4096, quality: 0.95 }),
-
-// ✅ รูปติดตั้ง: เบาลงได้ เพื่อกันล่ม/ช้า
-installPhoto: await fileToDataUrl_(inFile, { maxW: 1600, quality: 0.80 })
+serialNumberPhoto: await fileToDataUrl_(snFile, { maxW: 2560, quality: 0.92, timeoutMs: 8000 }),
+installPhoto: await fileToDataUrl_(inFile, { maxW: 1400, quality: 0.80, timeoutMs: 8000 })
   source: "user"
 };
-
+    // ✅ ไม่ให้รูปพังแล้วบล็อกการส่ง: ถ้าย่อไม่สำเร็จจะเป็น "" อยู่แล้ว
+// แต่ถ้ารูปยาวมาก ให้ตัดทิ้งเพื่อให้ยิงติด
+if (payload.serialNumberPhoto && payload.serialNumberPhoto.length > 1_800_000) payload.serialNumberPhoto = "";
+if (payload.installPhoto && payload.installPhoto.length > 1_800_000) payload.installPhoto = "";
     const r = await apiPost("install", "create", payload);
 
     if (r && r.ok) {
