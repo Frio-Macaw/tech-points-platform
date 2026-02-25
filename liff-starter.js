@@ -82,22 +82,26 @@ async function waitProfile_(ms = 5000){
   return window.__LIFF_PROFILE__;
 }
 
-// ===== API POST =====
 async function apiPost(sheet, action, payload) {
   const url = `${WEB_APP_URL}?sheet=${encodeURIComponent(sheet)}&action=${encodeURIComponent(action)}`;
 
-  const res = await fetch(url, {
-    method: "POST",
-    // ✅ ใช้ text/plain เพื่อไม่ให้เกิด preflight OPTIONS (Apps Script ไม่รับ OPTIONS)
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify(payload || {})
-  });
+  try{
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload || {})
+    });
 
-  const text = await res.text();
-  try {
-    return JSON.parse(text);
-  } catch {
-    return { ok: false, error: "INVALID_JSON", raw: text };
+    const text = await res.text();
+    if (!res.ok){
+      return { ok:false, error:`HTTP_${res.status}`, raw:text };
+    }
+
+    try { return JSON.parse(text); }
+    catch { return { ok:false, error:"INVALID_JSON", raw:text }; }
+
+  }catch(err){
+    return { ok:false, error:"FETCH_FAILED", detail:String(err) };
   }
 }
 
