@@ -19,24 +19,24 @@
   <div class="card">
     <div class="mini">UserId: <span id="userId">-</span></div>
 
-    <label>ชื่อร้านค้า (Dealer)</label>
+    <label>ชื่อร้านค้า (Dealer) <span class="req">*</span></label>
     <input id="dealer" placeholder="เช่น ร้านกอ จำกัด">
 
-    <label>BTU</label>
-    <select id="btu">
+    <label>ขนาด BTU ที่ติดตั้ง <span class="req">*</span></label>
+    <select id="btu" required>
       <option value="">เลือก</option>
-      <option>09-12</option>
-      <option>18-24</option>
+      <option>09-12 BTU</option>
+      <option>18-24 BTU</option>
     </select>
 
-    <label>Serial Number</label>
-    <input id="serialNumber" placeholder="SN...">
+    <label>หมายเลขเครื่อง (Serial Number) <span class="req">*</span></label>
+    <input id="serialNumber" placeholder="SN..." required>
 
-    <label>รูป Serial Number (ไม่บังคับ)</label>
-    <input id="serialNumberPhoto" type="file" accept="image/*" capture="environment">
+    <label>รูปภาพหมายเลขเครื่อง (Serial Number)<span class="req">*</span></label>
+    <input id="serialNumberPhoto" type="file" accept="image/*" capture="environment" required>
 
-    <label>รูปติดตั้ง (ไม่บังคับ)</label>
-    <input id="installPhoto" type="file" accept="image/*" capture="environment">
+    <label>รูปติดตั้ง<span class="req">*</span></label>
+    <input id="installPhoto" type="file" accept="image/*" capture="environment" required>
 
     <div class="hr"></div>
     <button class="btn primary" onclick="submitInstall()">บันทึก</button>
