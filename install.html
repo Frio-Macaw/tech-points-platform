@@ -25,8 +25,8 @@
     <label>ขนาด BTU ที่ติดตั้ง <span class="req">*</span></label>
     <select id="btu" required>
       <option value="">เลือก</option>
-      <option>09-12 BTU</option>
-      <option>18-24 BTU</option>
+      <option value="09-12 BTU">09-12 BTU</option>
+      <option value="18-24 BTU">18-24 BTU</option>
     </select>
 
     <label>หมายเลขเครื่อง (Serial Number) <span class="req">*</span></label>
@@ -49,7 +49,6 @@
 
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <script src="liff-starter.js?v=20260225_3"></script>
-<script>
 <script>
 function fileToDataUrl_(file){
   return new Promise((resolve) => {
