@@ -50,6 +50,7 @@
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <script src="liff-starter.js?v=20260225_3"></script>
 <script>
+<script>
 function fileToDataUrl_(file){
   return new Promise((resolve) => {
     if (!file) return resolve("");
@@ -75,7 +76,6 @@ function showResult_(type, msg){
   box.className = "result-box " + (type === "ok" ? "result-ok" : type === "warn" ? "result-warn" : "result-err");
   box.textContent = msg;
   box.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  //toast(msg, type === "ok");
 }
 
 async function submitInstall(){
@@ -86,13 +86,14 @@ async function submitInstall(){
     const dealer = document.getElementById("dealer").value.trim();
     const btu = document.getElementById("btu").value;
     const serialNumber = document.getElementById("serialNumber").value.trim();
+    const snFile = document.getElementById("serialNumberPhoto")?.files?.[0] || null;
+    const inFile = document.getElementById("installPhoto")?.files?.[0] || null;
 
     if (!dealer) return showResult_("err", "❌ กรุณากรอก Dealer");
     if (!btu) return showResult_("err", "❌ กรุณาเลือก BTU");
     if (!serialNumber) return showResult_("err", "❌ กรุณากรอก Serial Number");
-
-    const snFile = document.getElementById("serialNumberPhoto")?.files?.[0] || null;
-    const inFile = document.getElementById("installPhoto")?.files?.[0] || null;
+    if (!snFile) return showResult_("err", "❌ กรุณาแนบรูป Serial Number");
+    if (!inFile) return showResult_("err", "❌ กรุณาแนบรูปติดตั้ง");
 
     const payload = {
       userId: p.userId,
@@ -115,15 +116,15 @@ async function submitInstall(){
     } else {
       const code = (r && r.error) ? r.error : "unknown";
 
-const msgMap = {
-  "FETCH_FAILED": "⚠️ เลขเครื่องซ้ำ ระบบรับข้อมูลไว้แล้ว กรุณารอเจ้าหน้าที่ตรวจสอบ",
-  "HTTP_403": "ไม่มีสิทธิ์เข้าถึงระบบ (403) กรุณาตรวจสิทธิ์การ Deploy",
-  "HTTP_404": "ไม่พบปลายทาง (404) กรุณาตรวจสอบ WEB_APP_URL",
-  "HTTP_413": "ข้อมูล/ไฟล์ใหญ่เกินไป (413) กรุณาลองไม่แนบรูปก่อน",
-  "INVALID_JSON": "ระบบตอบกลับผิดรูปแบบ กรุณาลองใหม่อีกครั้ง"
-};
+      const msgMap = {
+        "FETCH_FAILED": "⚠️ เลขเครื่องซ้ำ ระบบรับข้อมูลไว้แล้ว กรุณารอเจ้าหน้าที่ตรวจสอบ",
+        "HTTP_403": "ไม่มีสิทธิ์เข้าถึงระบบ (403) กรุณาตรวจสิทธิ์การ Deploy",
+        "HTTP_404": "ไม่พบปลายทาง (404) กรุณาตรวจสอบ WEB_APP_URL",
+        "HTTP_413": "ข้อมูล/ไฟล์ใหญ่เกินไป (413) กรุณาลองใหม่อีกครั้ง",
+        "INVALID_JSON": "ระบบตอบกลับผิดรูปแบบ กรุณาลองใหม่อีกครั้ง"
+      };
 
-showResult_("err", "❌ บันทึกไม่สำเร็จ: " + (msgMap[code] || code));
+      showResult_("err", "❌ บันทึกไม่สำเร็จ: " + (msgMap[code] || code));
     }
 
   } catch(err){
