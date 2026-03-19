@@ -20,33 +20,97 @@
     <div class="mini">UserId: <span id="userId">-</span></div>
     <div class="hr"></div>
 
-    <button class="btn primary" onclick="loadBalance()">โหลดแต้มล่าสุด</button>
+    <button id="btnLoadPoints" class="btn primary" onclick="loadBalance()">โหลดแต้มล่าสุด</button>
 
-    <div class="hr"></div>
-    <div class="mini">แต้มสะสมทั้งหมด: <span id="plus">-</span></div>
-    <div class="mini">แต้มที่ใช้ไป: <span id="minus">-</span></div>
-    <div class="mini">แต้มคงเหลือ: <b id="balance">-</b></div>
+    <div id="pointsStatusBox" class="result-box" style="display:none"></div>
 
-    <div class="hr"></div>
-    <button class="btn" onclick="location.href='index.html'">กลับเมนู</button>
-    <div id="toast" class="mini"></div>
+<div class="hr"></div>
+
+<div class="result-box">
+  <div><b>09-12 BTU</b></div>
+  <div class="mini">แต้มคงเหลือที่ยังไม่ได้ใช้</div>
+  <div style="font-size:24px;font-weight:800;margin-top:6px">
+    <span id="balance0912">-</span> แต้ม
+  </div>
+</div>
+
+<div class="result-box">
+  <div><b>18-24 BTU</b></div>
+  <div class="mini">แต้มคงเหลือที่ยังไม่ได้ใช้</div>
+  <div style="font-size:24px;font-weight:800;margin-top:6px">
+    <span id="balance1824">-</span> แต้ม
+  </div>
+</div>
+
+<div class="hr"></div>
+<div class="mini">แต้มสะสมทั้งหมด: <span id="plus">-</span></div>
+<div class="mini">แต้มที่ใช้ไป: <span id="minus">-</span></div>
+<div class="mini">แต้มคงเหลือรวม: <b id="balance">-</b></div>
+
+<div class="hr"></div>
+<button class="btn" onclick="location.href='index.html'">กลับเมนู</button>
+<div id="toast" class="mini"></div>
   </div>
 </div>
 
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <script src="liff-starter.js?v=20260225_1"></script>
 <script>
+function showPointsStatus_(type, msg){
+  let box = document.getElementById("pointsStatusBox");
+  if (!box) return;
+
+  box.style.display = "block";
+  box.className = "result-box " + (
+    type === "ok" ? "result-ok" :
+    type === "warn" ? "result-warn" :
+    type === "loading" ? "result-loading" :
+    "result-err"
+  );
+  box.textContent = msg;
+}
+
+function setPointsLoading_(isLoading, msg){
+  const btn = document.getElementById("btnLoadPoints");
+  if (btn){
+    btn.disabled = isLoading;
+    btn.innerHTML = isLoading
+      ? `<span class="spinner"></span>กำลังโหลดข้อมูล...`
+      : `โหลดแต้มล่าสุด`;
+  }
+
+  if (isLoading && msg){
+    showPointsStatus_("loading", msg);
+  }
+}
+
 async function loadBalance(){
-  const p = await waitProfile_();
-  if (!p) return toast("LIFF ยังไม่พร้อม กรุณาลองใหม่", false);
+  try{
+    const p = await waitProfile_();
+    if (!p) return toast("LIFF ยังไม่พร้อม กรุณาลองใหม่", false);
 
-  const r = await apiPost("points", "balance", { userId: p.userId });
-  if (!r.ok) return toast("โหลดไม่สำเร็จ: " + (r.error||"unknown"), false);
+    setPointsLoading_(true, "⏳ กำลังโหลดข้อมูลแต้มล่าสุด...");
 
-  document.getElementById("plus").textContent = r.plus;
-  document.getElementById("minus").textContent = r.minus;
-  document.getElementById("balance").textContent = r.balance;
-  toast("อัปเดตล่าสุด ✅", true);
+    const r = await apiPost("points", "balance", { userId: p.userId });
+    if (!r.ok) {
+      showPointsStatus_("err", "❌ โหลดไม่สำเร็จ: " + (r.error || "unknown"));
+      return;
+    }
+
+    document.getElementById("balance0912").textContent = r.balance0912 ?? 0;
+    document.getElementById("balance1824").textContent = r.balance1824 ?? 0;
+    document.getElementById("plus").textContent = r.plus ?? 0;
+    document.getElementById("minus").textContent = r.minus ?? 0;
+    document.getElementById("balance").textContent = r.balance ?? 0;
+
+    showPointsStatus_("ok", "✅ โหลดข้อมูลแต้มล่าสุดเรียบร้อยแล้ว");
+    toast("อัปเดตล่าสุด ✅", true);
+
+  } catch(err){
+    showPointsStatus_("err", "❌ เกิดข้อผิดพลาด: " + String(err));
+  } finally {
+    setPointsLoading_(false);
+  }
 }
 </script>
 </body>
