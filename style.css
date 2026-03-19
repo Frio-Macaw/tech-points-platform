@@ -91,3 +91,30 @@ textarea{min-height:90px;resize:vertical}
   background: rgba(239,68,68,.12);
   color: #fca5a5;
 }
+
+.result-loading{
+  border-color: #38bdf8;
+  background: rgba(56,189,248,.12);
+  color: #bae6fd;
+}
+
+.btn[disabled]{
+  opacity: .65;
+  cursor: not-allowed;
+}
+
+.spinner{
+  display:inline-block;
+  width:14px;
+  height:14px;
+  border:2px solid rgba(255,255,255,.25);
+  border-top-color:#fff;
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+  vertical-align:-2px;
+  margin-right:8px;
+}
+
+@keyframes spin{
+  to{ transform:rotate(360deg); }
+}
