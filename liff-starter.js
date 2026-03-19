@@ -45,7 +45,7 @@ async function liffInit() {
   // 3) ถ้ามี email และยังไม่เคยเซฟ email นี้ในเครื่อง -> ส่งไปหลังบ้าน
   //    (กันยิงซ้ำทุกครั้งที่เปิดหน้า)
   if (email) {
-    const key = `emailSaved:${profile.userId}`;
+    const key = `emailSaved:v2:${profile.userId}`;
     const lastSaved = localStorage.getItem(key);
 
     if (lastSaved !== email) {
@@ -55,15 +55,11 @@ async function liffInit() {
           eMail_2: email
         });
 
-        if (r && r.ok) {
+        if (r && r.ok && r.mode === "patched") {
           localStorage.setItem(key, email);
-          // ไม่ต้อง toast ก็ได้ เพราะคุณอยากแอบทำหลังบ้าน
-          // toast("Email saved", true);
-        } else {
-          // ✅ ไม่โชว์อะไรให้ end user เห็น (แอบทำหลังบ้าน)
-          // Logger ฝั่ง browser (optional)
-          console.warn("auto-save email failed:", r?.error || r);
-        }
+          } else {
+          console.warn("auto-save email not completed:", r);
+          }
       } catch (err) {
           // ✅ ไม่โชว์อะไรให้ end user เห็น
           console.warn("auto-save email exception:", err);
