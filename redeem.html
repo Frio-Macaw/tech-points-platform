@@ -19,43 +19,166 @@
   <div class="card">
     <div class="mini">UserId: <span id="userId">-</span></div>
 
-    <label>ขนาด BTU ที่แลกแต้ม</label>
-    <select id="btu" required>
-      <option value="">เลือก</option>
-      <option value="09-12 BTU">09-12 BTU</option>
-      <option value="18-24 BTU">18-24 BTU</option>
-    </select>
+<div id="redeemStatusBox" class="result-box" style="display:none"></div>
 
-    <label>จำนวนแต้มที่ต้องการใช้</label>
-    <input id="points" type="number" min="1" step="1" placeholder="เช่น 10">
-    <div class="mini">* เมื่อยืนยันแลก แต้มจะถูกหักทันทีเพื่อ “จองสิทธิ์”</div>
+<div class="result-box">
+  <div><b>แต้มคงเหลือที่ใช้ได้</b></div>
+  <div class="mini" style="margin-top:8px">09-12 BTU: <b id="balance0912">-</b> แต้ม</div>
+  <div class="mini">18-24 BTU: <b id="balance1824">-</b> แต้ม</div>
+  <div class="mini">รวมทั้งหมด: <b id="balanceTotal">-</b> แต้ม</div>
+</div>
 
-    <div class="hr"></div>
-    <button class="btn danger" onclick="submitRedeem()">ยืนยันแลกแต้ม</button>
-    <div style="height:10px"></div>
-    <button class="btn" onclick="location.href='index.html'">กลับเมนู</button>
-    <div id="toast" class="mini"></div>
+<label>ประเภทการแลกแต้ม</label>
+<select id="btu" required>
+  <option value="">เลือก</option>
+  <option value="09-12 BTU">09-12 BTU</option>
+  <option value="18-24 BTU">18-24 BTU</option>
+  <option value="TOTAL">แต้มรวมทั้งหมด (ขั้นต่ำ 500 แต้ม)</option>
+</select>
+
+<label>จำนวนแต้มที่ต้องการใช้</label>
+<input id="points" type="number" min="1" step="1" placeholder="เช่น 10 หรือ 500">
+
+<div id="redeemHint" class="mini">
+  * เมื่อยืนยันแลก แต้มจะถูกหักทันทีเพื่อ “จองสิทธิ์”
+</div>
+
+<div class="hr"></div>
+<button id="btnRedeemSave" class="btn danger" onclick="submitRedeem()">ยืนยันแลกแต้ม</button>
+<div style="height:10px"></div>
+<button class="btn" onclick="location.href='index.html'">กลับเมนู</button>
+<div id="toast" class="mini"></div>
   </div>
 </div>
 
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <script src="liff-starter.js?v=20260225_1"></script>
 <script>
-async function submitRedeem(){
-  const p = await waitProfile_();
-  if (!p) return toast("LIFF ยังไม่พร้อม กรุณาลองใหม่", false);
+function showRedeemStatus_(type, msg){
+  const box = document.getElementById("redeemStatusBox");
+  if (!box) return;
 
-  const pts = Number(document.getElementById("points").value || 0);
-  if (!Number.isFinite(pts) || pts <= 0) return toast("กรอกแต้มให้ถูกต้อง", false);
-
-  const payload = { userId: p.userId, btu: document.getElementById("btu").value, points: pts };
-  const r = await apiPost("redeems", "create", payload);
-
-  if (r.ok) popup(`แลกสำเร็จ ✅ คงเหลือ ${r.balanceAfter} แต้ม`);
-  else popup("แลกไม่สำเร็จ: " + (r.error || "unknown"), "เกิดข้อผิดพลาด ❌");
+  box.style.display = "block";
+  box.className = "result-box " + (
+    type === "ok" ? "result-ok" :
+    type === "warn" ? "result-warn" :
+    type === "loading" ? "result-loading" :
+    "result-err"
+  );
+  box.textContent = msg;
 }
-</script>
 
+function setRedeemLoading_(isLoading, msg){
+  const btn = document.getElementById("btnRedeemSave");
+  if (btn){
+    btn.disabled = isLoading;
+    btn.innerHTML = isLoading
+      ? `<span class="spinner"></span>กำลังทำรายการ...`
+      : `ยืนยันแลกแต้ม`;
+  }
+
+  if (isLoading && msg){
+    showRedeemStatus_("loading", msg);
+  }
+}
+
+function refreshRedeemHint_(){
+  const mode = document.getElementById("btu").value;
+  const hint = document.getElementById("redeemHint");
+  if (!hint) return;
+
+  if (mode === "TOTAL"){
+    hint.textContent = "* แลกแบบแต้มรวม ต้องใช้ขั้นต่ำ 500 แต้ม และระบบจะตัดแต้มเก่าไปใหม่";
+  } else if (mode === "09-12 BTU" || mode === "18-24 BTU"){
+    hint.textContent = "* แลกตาม BTU เดิม ระบบจะตัดแต้มเก่าไปใหม่ใน BTU นั้น";
+  } else {
+    hint.textContent = "* เมื่อยืนยันแลก แต้มจะถูกหักทันทีเพื่อ “จองสิทธิ์”";
+  }
+}
+
+async function loadRedeemBalances(){
+  try{
+    const p = await waitProfile_();
+    if (!p) return;
+
+    showRedeemStatus_("loading", "⏳ กำลังโหลดแต้มคงเหลือ...");
+    const r = await apiPost("points", "balance", { userId: p.userId });
+
+    if (!r || !r.ok){
+      showRedeemStatus_("err", "❌ โหลดแต้มไม่สำเร็จ");
+      return;
+    }
+
+    document.getElementById("balance0912").textContent = r.balance0912 ?? 0;
+    document.getElementById("balance1824").textContent = r.balance1824 ?? 0;
+    document.getElementById("balanceTotal").textContent = r.balance ?? 0;
+
+    showRedeemStatus_("ok", "✅ โหลดแต้มคงเหลือเรียบร้อยแล้ว");
+  } catch(err){
+    showRedeemStatus_("err", "❌ เกิดข้อผิดพลาด: " + String(err));
+  }
+}
+
+async function submitRedeem(){
+  try{
+    const p = await waitProfile_();
+    if (!p) return toast("LIFF ยังไม่พร้อม กรุณาลองใหม่", false);
+
+    const mode = document.getElementById("btu").value;
+    const pts = Number(document.getElementById("points").value || 0);
+
+    if (!mode) return toast("กรุณาเลือกประเภทการแลกแต้ม", false);
+    if (!Number.isFinite(pts) || pts <= 0) return toast("กรอกแต้มให้ถูกต้อง", false);
+
+    if (mode === "TOTAL" && pts < 500){
+      return popup("แลกแต้มรวมได้ขั้นต่ำ 500 แต้ม", "เงื่อนไขไม่ถูกต้อง ❌");
+    }
+
+    setRedeemLoading_(true, "⏳ กำลังทำรายการแลกแต้ม...");
+    const payload = {
+      userId: p.userId,
+      btu: mode,
+      points: pts
+    };
+
+    const r = await apiPost("redeems", "create", payload);
+
+    if (r && r.ok){
+      popup(`แลกสำเร็จ ✅ คงเหลือรวม ${r.balanceAfter} แต้ม`);
+      document.getElementById("points").value = "";
+      await loadRedeemBalances();
+    } else {
+      const msgMap = {
+        "TOTAL_REDEEM_MIN_500": "แลกแต้มรวมได้ขั้นต่ำ 500 แต้ม",
+        "INSUFFICIENT_TOTAL_BALANCE": "แต้มรวมคงเหลือไม่พอ",
+        "INSUFFICIENT_BTU_BALANCE": "แต้มคงเหลือของ BTU ที่เลือกไม่พอ"
+      };
+
+      popup(
+        msgMap[r?.error] || ("แลกไม่สำเร็จ: " + (r?.error || "unknown")),
+        "เกิดข้อผิดพลาด ❌"
+      );
+    }
+  } catch(err){
+    popup("แลกไม่สำเร็จ: " + String(err), "เกิดข้อผิดพลาด ❌");
+  } finally {
+    setRedeemLoading_(false);
+  }
+}
+
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    loadRedeemBalances().catch(() => {});
+    refreshRedeemHint_();
+  }, 300);
+});
+
+document.addEventListener("change", (e) => {
+  if (e.target && e.target.id === "btu"){
+    refreshRedeemHint_();
+  }
+});
+</script>
 <!-- ✅ Popup Modal -->
 <div id="modalOverlay" class="modal-overlay" onclick="closePopup()">
   <div class="modal" onclick="event.stopPropagation()">
