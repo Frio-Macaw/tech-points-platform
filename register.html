@@ -54,7 +54,7 @@
     <img id="prevId" style="width:100%;max-height:180px;object-fit:cover;border-radius:12px;display:none;margin-top:6px;border:1px solid #26262b;">
 
     <div class="hr"></div>
-    <button class="btn primary" onclick="submitRegister()">บันทึก</button>
+    <button id="btnRegisterSave" class="btn primary" onclick="submitRegister()">บันทึก</button>
     <div style="height:10px"></div>
     <button class="btn" onclick="location.href='index.html'">กลับเมนู</button>
     <div id="toast" class="mini"></div>
@@ -172,6 +172,17 @@ async function loadDraftFromSheet_(){
 
   toast("โหลดข้อมูลเดิมแล้ว ✅ แก้ไขได้เลย", true);
 }
+
+function setRegisterLoading_(isLoading, msg){
+  const btn = document.getElementById("btnRegisterSave");
+  if (btn){
+    btn.disabled = isLoading;
+    btn.innerHTML = isLoading
+      ? `<span class="spinner"></span>กำลังอัปโหลด...`
+      : `บันทึก`;
+  }
+  if (msg) toast(msg, true);
+}
   
 async function submitRegister(){
   try {
@@ -203,28 +214,32 @@ async function submitRegister(){
     const bookFile = document.getElementById("bookBankPhoto")?.files?.[0] || null;
     const idFile   = document.getElementById("idPhoto")?.files?.[0] || null;
 
-    // เอกสารต้องอ่านตัวหนังสือ: เก็บใหญ่หน่อย + quality สูง
-const bookBankPhoto = await fileToDataUrl_(bookFile, { maxW: 2560, quality: 0.92 });
-const idPhoto       = await fileToDataUrl_(idFile,   { maxW: 2560, quality: 0.92 });
-const eMail_2 = String(window.__LIFF_EMAIL__ || "").trim();
-    
+    setRegisterLoading_(true, "⏳ กำลังเตรียมรูปสมุดบัญชี...");
+    const bookBankPhoto = await fileToDataUrl_(bookFile, { maxW: 1800, quality: 0.82 });
+
+    setRegisterLoading_(true, "⏳ กำลังเตรียมรูปบัตรประชาชน...");
+    const idPhoto = await fileToDataUrl_(idFile, { maxW: 1800, quality: 0.82 });
+
     const payload = {
       userId: p.userId,
       displayName: p.displayName || "",
       pictureUrl: p.pictureUrl || "",
-      eMail_2: eMail_2,
       name, lastName, phone, province,
       bankName, bankAccountNo, bankAccountName, eMail,
       bookBankPhoto, idPhoto,
       source: "user"
     };
 
+    setRegisterLoading_(true, "⏳ กำลังส่งข้อมูลลงทะเบียน...");
     const r = await apiPost("members", "upsert", payload);
+
     if (r && r.ok) popup("บันทึกเสร็จสิ้นแล้ว ✅");
     else popup("บันทึกไม่สำเร็จ: " + (r?.error || "unknown"), "เกิดข้อผิดพลาด ❌");
 
   } catch (err) {
     toast("บันทึกไม่สำเร็จ: " + String(err), false);
+  } finally {
+    setRegisterLoading_(false, "");
   }
 }
 
