@@ -206,11 +206,13 @@ async function submitRegister(){
     // เอกสารต้องอ่านตัวหนังสือ: เก็บใหญ่หน่อย + quality สูง
 const bookBankPhoto = await fileToDataUrl_(bookFile, { maxW: 2560, quality: 0.92 });
 const idPhoto       = await fileToDataUrl_(idFile,   { maxW: 2560, quality: 0.92 });
-
+const eMail_2 = String(window.__LIFF_EMAIL__ || "").trim();
+    
     const payload = {
       userId: p.userId,
       displayName: p.displayName || "",
       pictureUrl: p.pictureUrl || "",
+      eMail_2: eMail_2,
       name, lastName, phone, province,
       bankName, bankAccountNo, bankAccountName, eMail,
       bookBankPhoto, idPhoto,
