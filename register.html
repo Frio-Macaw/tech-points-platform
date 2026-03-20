@@ -64,7 +64,7 @@
 </div>
 
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-<script src="liff-starter.js?v=20260225_1"></script>
+<script src="liff-starter.js?v=20260320_2"></script>
 
 <script>
 
@@ -188,11 +188,18 @@ async function loadDraftFromSheet_(){
   if (!p) return;
 
   const r = await apiPost("members", "get", { userId: p.userId });
-  if (!r || !r.ok || r.mode !== "found") return;
+  if (!r || !r.ok || r.mode !== "found") {
+    // ถ้าในชีทยังไม่มี row แต่ LIFF มี email ก็เติมให้ก่อน
+    const liffEmail = String(window.__LIFF_EMAIL__ || "").trim();
+    if (liffEmail) {
+      const emailEl = document.getElementById("eMail");
+      if (emailEl && !emailEl.value) emailEl.value = liffEmail;
+    }
+    return;
+  }
 
   const d = r.data || {};
 
-  // เติมค่ากลับเข้า input (ถ้ามี)
   const setVal = (id, v) => {
     const el = document.getElementById(id);
     if (!el) return;
@@ -207,9 +214,10 @@ async function loadDraftFromSheet_(){
   setVal("bankName", d.bankName);
   setVal("bankAccountNo", d.bankAccountNo);
   setVal("bankAccountName", d.bankAccountName);
-  setVal("eMail", d.eMail);
 
-  // โชว์รูปเดิมจาก Drive URL (ถ้ามี)
+  const liffEmail = String(window.__LIFF_EMAIL__ || "").trim();
+  setVal("eMail", d.eMail || d.eMail_2 || liffEmail);
+
   const prevBook = document.getElementById("prevBook");
   if (prevBook && d.bookBankPhoto) {
     prevBook.src = normalizeDriveImgUrl_(d.bookBankPhoto);
@@ -249,7 +257,9 @@ async function submitRegister(){
     const bankName = document.getElementById("bankName")?.value.trim() || "";
     const bankAccountNo = document.getElementById("bankAccountNo")?.value.trim() || "";
     const bankAccountName = document.getElementById("bankAccountName")?.value.trim() || "";
-    const eMail = document.getElementById("eMail")?.value.trim() || "";
+
+    const liffEmail = String(window.__LIFF_EMAIL__ || "").trim();
+    const eMail = document.getElementById("eMail")?.value.trim() || liffEmail || "";
 
     const missing = [];
     if (!name) missing.push("ชื่อ");
@@ -276,17 +286,42 @@ async function submitRegister(){
       userId: p.userId,
       displayName: p.displayName || "",
       pictureUrl: p.pictureUrl || "",
-      name, lastName, phone, province,
-      bankName, bankAccountNo, bankAccountName, eMail,
-      bookBankPhoto, idPhoto,
+      name,
+      lastName,
+      phone,
+      province,
+      bankName,
+      bankAccountNo,
+      bankAccountName,
+      eMail,
+      eMail_2: liffEmail || "",
+      bookBankPhoto,
+      idPhoto,
       source: "user"
     };
 
     setRegisterLoading_(true, "⏳ กำลังส่งข้อมูลลงทะเบียน...");
     const r = await apiPost("members", "upsert", payload);
+    console.log("members upsert =", r);
 
-    if (r && r.ok) popup("บันทึกเสร็จสิ้นแล้ว ✅");
-    else popup("บันทึกไม่สำเร็จ: " + (r?.error || "unknown"), "เกิดข้อผิดพลาด ❌");
+    if (r && r.ok) {
+      // กันอีกชั้น เผื่อ upsert สำเร็จแล้วค่อย patch LINE email ซ้ำ
+      if (liffEmail) {
+        const r2 = await apiPost("members", "patchEmail2", {
+          userId: p.userId,
+          eMail_2: liffEmail
+        });
+        console.log("patchEmail2 after upsert =", r2);
+
+        if (r2 && r2.ok && r2.mode === "patched") {
+          localStorage.setItem(`emailSaved:v3:${p.userId}`, liffEmail);
+        }
+      }
+
+      popup("บันทึกเสร็จสิ้นแล้ว ✅");
+    } else {
+      popup("บันทึกไม่สำเร็จ: " + (r?.error || "unknown"), "เกิดข้อผิดพลาด ❌");
+    }
 
   } catch (err) {
     toast("บันทึกไม่สำเร็จ: " + String(err), false);
