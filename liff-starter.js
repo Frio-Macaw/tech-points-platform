@@ -1,34 +1,29 @@
-// ===== CONFIG (ของคุณ) กรอกเอง =====
-const LIFF_ID = "2009127023-sgWJernO"; // กรอกเอง
+// ===== CONFIG (ของคุณ) =====
+const LIFF_ID = "2009127023-sgWJernO";
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzyzubdy2RHBv88vZmylzxy2_tL1FzQypLUSmQCbeH9Dq3KOAIKPrkA23DvZln9zx783Q/exec";
 
 // ===== INIT =====
 async function liffInit() {
   await liff.init({ liffId: LIFF_ID });
 
-  // ✅ บังคับต้องเปิดในแอป LINE เท่านั้น
   if (!liff.isInClient()) {
     toast("กรุณาเปิดผ่าน LINE (Rich Menu) เท่านั้น", false);
     return;
   }
 
-  // ถ้าอยู่ใน LINE แต่ยังไม่ล็อกอิน (กรณี rare) ค่อย login
   if (!liff.isLoggedIn()) {
     liff.login({ redirectUri: window.location.href });
     return;
   }
 
-  // 1) getProfile เพื่อได้ userId และข้อมูลพื้นฐาน
+  // 1) profile
   const profile = await liff.getProfile();
   window.__LIFF_PROFILE__ = profile;
 
-  // ===== แสดงเฉพาะชื่อ LINE (ซ่อน UserId ทุกหน้า) =====
+  // ซ่อน UserId
   const uidEl = document.getElementById("userId");
   if (uidEl) {
-    // ยัง set ค่าไว้ได้ (เผื่อ debug) แต่ไม่โชว์ให้ผู้ใช้เห็น
     uidEl.textContent = profile.userId;
-
-    // ✅ ซ่อนทั้งบรรทัด "UserId: ...." โดยซ่อนกล่อง parent (.mini)
     const row = uidEl.closest(".mini");
     if (row) row.style.display = "none";
   }
@@ -36,16 +31,23 @@ async function liffInit() {
   const dnEl = document.getElementById("displayName");
   if (dnEl) dnEl.textContent = profile.displayName || "-";
 
-  // 2) แอบดึง email จาก ID Token (ต้องมี scope: openid + email)
-  //    ถ้าไม่มี email => ปล่อยว่าง ไม่ต้องทำอะไร
+  // 2) email จาก LINE
   const decoded = liff.getDecodedIDToken();
   const email = decoded?.email ? String(decoded.email).trim() : "";
   window.__LIFF_EMAIL__ = email;
 
-  // 3) ถ้ามี email และยังไม่เคยเซฟ email นี้ในเครื่อง -> ส่งไปหลังบ้าน
-  //    (กันยิงซ้ำทุกครั้งที่เปิดหน้า)
+  console.log("LIFF decoded email =", email || "(empty)");
+  console.log("LIFF userId =", profile.userId);
+
+  // ถ้ามี input eMail อยู่บนหน้า ให้เติมให้เลย
+  const emailEl = document.getElementById("eMail");
+  if (emailEl && !emailEl.value && email) {
+    emailEl.value = email;
+  }
+
+  // 3) auto save ลง eMail_2 ถ้ามี row อยู่แล้ว
   if (email) {
-    const key = `emailSaved:v2:${profile.userId}`;
+    const key = `emailSaved:v3:${profile.userId}`;
     const lastSaved = localStorage.getItem(key);
 
     if (lastSaved !== email) {
@@ -55,20 +57,21 @@ async function liffInit() {
           eMail_2: email
         });
 
+        console.log("patchEmail2(auto) =", r);
+
         if (r && r.ok && r.mode === "patched") {
           localStorage.setItem(key, email);
-          } else {
+        } else {
           console.warn("auto-save email not completed:", r);
-          }
+        }
       } catch (err) {
-          // ✅ ไม่โชว์อะไรให้ end user เห็น
-          console.warn("auto-save email exception:", err);
+        console.warn("auto-save email exception:", err);
       }
     }
   }
 }
 
-// ===== WAIT PROFILE (กันกดเร็ว ตอน LIFF ยัง init ไม่เสร็จ) =====
+// ===== WAIT PROFILE =====
 async function waitProfile_(ms = 5000){
   const start = Date.now();
   while (!window.__LIFF_PROFILE__) {
@@ -93,10 +96,13 @@ async function apiPost(sheet, action, payload) {
       return { ok:false, error:`HTTP_${res.status}`, raw:text };
     }
 
-    try { return JSON.parse(text); }
-    catch { return { ok:false, error:"INVALID_JSON", raw:text }; }
+    try {
+      return JSON.parse(text);
+    } catch {
+      return { ok:false, error:"INVALID_JSON", raw:text };
+    }
 
-  }catch(err){
+  } catch(err){
     return { ok:false, error:"FETCH_FAILED", detail:String(err) };
   }
 }
@@ -104,7 +110,7 @@ async function apiPost(sheet, action, payload) {
 // ===== TOAST =====
 function toast(msg, ok = true) {
   const el = document.getElementById("toast");
-  if (!el) return; // ถ้าอยากให้เด้ง alert ให้เปลี่ยนเป็น: return alert(msg);
+  if (!el) return;
   el.textContent = msg;
   el.className = ok ? "mini ok" : "mini err";
 }
