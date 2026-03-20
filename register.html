@@ -44,12 +44,14 @@
     <input id="eMail" placeholder="เช่น name@email.com" inputmode="email">
 
     <label>รูปสมุดบัญชี (ไม่บังคับ)</label>
-    <input id="bookBankPhoto" type="file" accept="image/*,image/heic,image/heif">
+    <input id="bookBankPhoto" type="file"
+  accept=".jpg,.jpeg,.heic,.heif,.dng,image/jpeg,image/heic,image/heif,image/dng,image/x-adobe-dng,image/*">
     <div class="mini">รูปเดิม (ถ้ามี):</div>
     <img id="prevBook" style="width:100%;max-height:180px;object-fit:cover;border-radius:12px;display:none;margin-top:6px;border:1px solid #26262b;">
 
     <label>รูปบัตรประชาชน (ไม่บังคับ)</label>
-    <input id="idPhoto" type="file" accept="image/*,image/heic,image/heif">
+    <input id="idPhoto" type="file"
+  accept=".jpg,.jpeg,.heic,.heif,.dng,image/jpeg,image/heic,image/heif,image/dng,image/x-adobe-dng,image/*">
     <div class="mini">รูปเดิม (ถ้ามี):</div>
     <img id="prevId" style="width:100%;max-height:180px;object-fit:cover;border-radius:12px;display:none;margin-top:6px;border:1px solid #26262b;">
 
@@ -65,50 +67,100 @@
 <script src="liff-starter.js?v=20260225_1"></script>
 
 <script>
-async function fileToDataUrl_(file, opt = {}){
+
+function getFileExt_(file){
+  const name = String(file?.name || "");
+  const m = name.match(/\.([^.]+)$/);
+  return (m && m[1] ? m[1] : "").toLowerCase();
+}
+
+function readFileAsDataUrl_(file){
+  return new Promise((resolve, reject) => {
+    const fr = new FileReader();
+    fr.onload = () => resolve(String(fr.result || ""));
+    fr.onerror = () => reject(fr.error || new Error("READ_FILE_FAILED"));
+    fr.readAsDataURL(file);
+  });
+}
+
+function isCanvasFriendlyImage_(file){
+  const type = String(file?.type || "").toLowerCase();
+  const ext = getFileExt_(file);
+
+  return (
+    /^image\/(jpeg|jpg|png|webp|gif|bmp)$/i.test(type) ||
+    ["jpg", "jpeg", "png", "webp", "gif", "bmp"].includes(ext)
+  );
+}
+
+async function canvasToJpegDataUrl_(file, opt = {}){
+  const {
+    maxW = 2560,
+    quality = 0.9
+  } = opt;
+
+  const imgUrl = URL.createObjectURL(file);
   try{
-    if (!file) return "";
-
-    const {
-      maxW = 2560,          // ความกว้างสูงสุดหลังย่อ
-      quality = 0.9,        // คุณภาพ jpeg (0-1)
-      forceJpeg = true      // แปลงเป็น jpeg เพื่อให้เบาและเสถียร
-    } = opt;
-
-    // อ่านไฟล์เป็นรูป
-    const imgUrl = URL.createObjectURL(file);
     const img = new Image();
     img.src = imgUrl;
 
-    await new Promise((res, rej)=>{
+    await new Promise((res, rej) => {
       img.onload = res;
       img.onerror = rej;
     });
 
-    // คำนวณ scale (ไม่ขยายเกินของเดิม)
-    const scale = Math.min(1, maxW / img.width);
-    const w = Math.round(img.width * scale);
-    const h = Math.round(img.height * scale);
+    const scale = Math.min(1, maxW / (img.width || 1));
+    const w = Math.max(1, Math.round(img.width * scale));
+    const h = Math.max(1, Math.round(img.height * scale));
 
     const canvas = document.createElement("canvas");
-    canvas.width = w; canvas.height = h;
-    const ctx = canvas.getContext("2d");
+    canvas.width = w;
+    canvas.height = h;
 
-    // ช่วยให้ตัวหนังสือคมขึ้น (บางเครื่องเห็นผลชัด)
+    const ctx = canvas.getContext("2d");
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = "high";
-
     ctx.drawImage(img, 0, 0, w, h);
-    URL.revokeObjectURL(imgUrl);
 
-    if (forceJpeg){
-      return canvas.toDataURL("image/jpeg", quality);
-    } else {
-      // ใช้ type เดิม (ไม่แนะนำถ้าต้องการให้เบา)
-      return canvas.toDataURL(file.type || "image/png", quality);
+    return canvas.toDataURL("image/jpeg", quality);
+  } finally {
+    URL.revokeObjectURL(imgUrl);
+  }
+}
+
+async function fileToDataUrl_(file, opt = {}){
+  if (!file) return "";
+
+  const {
+    maxW = 2560,
+    quality = 0.9,
+    maxRawMb = 20
+  } = opt;
+
+  const ext = getFileExt_(file);
+  const isCanvasFriendly = isCanvasFriendlyImage_(file);
+
+  try {
+    // กลุ่มที่แปลงผ่าน canvas ได้ดี -> บีบอัดเป็น jpg
+    if (isCanvasFriendly) {
+      return await canvasToJpegDataUrl_(file, { maxW, quality });
     }
-  }catch(_){
-    return "";
+
+    // กลุ่ม HEIC / HEIF / DNG / อื่น ๆ
+    // ไม่ฝืนแปลงผ่าน canvas แต่ส่งไฟล์เดิมเป็น base64 ตรง ๆ
+    if (file.size > maxRawMb * 1024 * 1024) {
+      throw new Error(`ไฟล์ ${file.name || ext || "รูปภาพ"} มีขนาดใหญ่เกิน ${maxRawMb} MB`);
+    }
+
+    return await readFileAsDataUrl_(file);
+
+  } catch (err) {
+    // fallback สุดท้าย: ลองอ่านเป็น base64 ตรง ๆ อีกครั้ง
+    try {
+      return await readFileAsDataUrl_(file);
+    } catch (_) {
+      throw new Error(`ไม่สามารถอ่านไฟล์ ${file.name || ""} ได้`);
+    }
   }
 }
 
