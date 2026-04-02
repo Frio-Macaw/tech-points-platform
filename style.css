@@ -134,8 +134,16 @@ textarea{min-height:90px;resize:vertical}
   box-shadow:none;
 }
 
-.menu-home .card .mini{
-  color:#234c6d;
+.menu-home .brand .title,
+.menu-home .badge,
+.menu-home .card,
+.menu-home .card .mini,
+.menu-home #toast{
+  color:#02497E;
+}
+
+.menu-home .badge{
+  border-color:rgba(2,73,126,.35);
 }
 
 .menu-home .card .hr{
