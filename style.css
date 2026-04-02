@@ -125,3 +125,44 @@ textarea{min-height:90px;resize:vertical}
 @keyframes spin{
   to{ transform:rotate(360deg); }
 }
+
+/* ===== Home menu only ===== */
+.menu-home .card{
+  background:#EEFEFF;
+  border:1px solid rgba(2,73,126,.14);
+  border-radius:24px;
+  box-shadow:none;
+}
+
+.menu-home .card .mini{
+  color:#234c6d;
+}
+
+.menu-home .card .hr{
+  background:rgba(2,73,126,.12);
+}
+
+/* ปุ่มเมนู 4 ปุ่ม เฉพาะหน้า index */
+.menu-home .card > button:nth-of-type(1){
+  background:#02497E;
+  border-color:#02497E;
+  color:#FFFFFF;
+}
+
+.menu-home .card > button:nth-of-type(2){
+  background:#3392D2;
+  border-color:#3392D2;
+  color:#FFFFFF;
+}
+
+.menu-home .card > button:nth-of-type(3){
+  background:#46BEEA;
+  border-color:#46BEEA;
+  color:#FFFFFF;
+}
+
+.menu-home .card > button:nth-of-type(4){
+  background:#FF0000;
+  border-color:#FF0000;
+  color:#FFFFFF;
+}
