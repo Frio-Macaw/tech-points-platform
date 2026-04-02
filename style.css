@@ -3,7 +3,14 @@
   --line:#26262b; --accent:#22c55e; --danger:#ef4444; --btn:#1f2937;
 }
 *{box-sizing:border-box}
-body{margin:0;font-family:system-ui,-apple-system,"Sarabun",sans-serif;background:var(--bg);color:var(--text)}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,"Sarabun",sans-serif;
+  background: linear-gradient(180deg, #9DE0E9 0%, #3891CE 100%);
+  background-attachment: fixed;
+  color:var(--text);
+  min-height:100vh;
+}
 .wrap{max-width:520px;margin:0 auto;padding:18px}
 .brand{display:flex;align-items:center;gap:12px;margin:10px 0 14px}
 .brand img{height:38px}
