@@ -135,15 +135,23 @@ textarea{min-height:90px;resize:vertical}
 }
 
 .menu-home .brand .title,
-.menu-home .badge,
 .menu-home .card,
-.menu-home .card .mini,
 .menu-home #toast{
   color:#02497E;
 }
 
 .menu-home .badge{
+  color:#02497E;
   border-color:rgba(2,73,126,.35);
+  font-weight:800;
+  font-size:13px;
+}
+
+.menu-home .card .mini{
+  color:#02497E;
+  font-weight:800;
+  font-size:15px;
+  line-height:1.6;
 }
 
 .menu-home .card .hr{
