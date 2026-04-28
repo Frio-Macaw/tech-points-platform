@@ -326,21 +326,14 @@ async function submitRegister(){
 }
 
 window.addEventListener("load", () => {
-  setTimeout(() => loadDraftFromSheet_().catch(() => {}), 300);
-});
-
-</script>
-
-<!-- Popup Modal -->
-<div id="modalOverlay" class="modal-overlay" onclick="closePopup()">
-  <div class="modal" onclick="event.stopPropagation()">
-    <h3 id="modalTitle">สำเร็จ</h3>
-    <p id="modalMsg">บันทึกเสร็จสิ้นแล้ว</p>
-    <div class="actions">
-      <button class="btn primary" onclick="closePopup()">ตกลง</button>
-    </div>
-  </div>
-</div>
-
-</body>
-</html>
+  // แสดงรูปและชื่อ LINE ทันทีที่ LIFF พร้อม (ไม่ต้องรอ sheet API)
+  const waitPic = setInterval(() => {
+    const p = window.__LIFF_PROFILE__;
+    if (!p) return;
+    clearInterval(waitPic);
+    const picEl = document.getElementById("profilePic");
+    if (picEl && p.pictureUrl) picEl.src = p.pictureUrl;
+    const nameEl = document.getElementById("displayName");
+    if (nameEl) nameEl.textContent = p.displayName || "";
+  }, 100);
+  setTimeout((
