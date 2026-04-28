@@ -82,12 +82,12 @@
     <label class="reg-label">รูปสมุดบัญชี (ไม่บังคับ)</label>
     <input class="reg-input" id="bookBankPhoto" type="file"
       accept=".jpg,.jpeg,.heic,.heif,.dng,image/jpeg,image/heic,image/heif,image/dng,image/x-adobe-dng,image/*">
-    <img id="prevBook" class="reg-prev-img" alt="รูปสมุดบัญชีเดิม">
+    <img id="prevBook" class="reg-prev-img" alt="รูปสมุดบัญชี">
 
     <label class="reg-label">รูปบัตรประชาชน (ไม่บังคับ)</label>
     <input class="reg-input" id="idPhoto" type="file"
       accept=".jpg,.jpeg,.heic,.heif,.dng,image/jpeg,image/heic,image/heif,image/dng,image/x-adobe-dng,image/*">
-    <img id="prevId" class="reg-prev-img" alt="รูปบัตรประชาชนเดิม">
+    <img id="prevId" class="reg-prev-img" alt="รูปบัตรประชาชน">
 
     <div class="reg-hr"></div>
     <button id="btnRegisterSave" class="reg-btn-save" onclick="submitRegister()">บันทึก</button>
@@ -275,10 +275,10 @@ async function submitRegister(){
     const idFile   = document.getElementById("idPhoto")?.files?.[0] || null;
 
     setRegisterLoading_(true, "⏳ กำลังเตรียมรูปสมุดบัญชี...");
-    const bookBankPhoto = await fileToDataUrl_(bookFile, { maxW: 1800, quality: 0.82 });
+    const bookBankPhoto = await fileToDataUrl_(bookFile, { maxW: 1200, quality: 0.75 });
 
     setRegisterLoading_(true, "⏳ กำลังเตรียมรูปบัตรประชาชน...");
-    const idPhoto = await fileToDataUrl_(idFile, { maxW: 1800, quality: 0.82 });
+    const idPhoto = await fileToDataUrl_(idFile, { maxW: 1200, quality: 0.75 });
 
     const payload = {
       userId: p.userId,
@@ -317,7 +317,25 @@ async function submitRegister(){
   }
 }
 
+// แสดง preview รูปทันทีที่เลือกไฟล์
+function bindPreview_(inputId, imgId){
+  const inp = document.getElementById(inputId);
+  const img = document.getElementById(imgId);
+  if (!inp || !img) return;
+  inp.addEventListener("change", () => {
+    const file = inp.files?.[0];
+    if (!file) { img.style.display = "none"; img.src = ""; return; }
+    const url = URL.createObjectURL(file);
+    img.onload = () => URL.revokeObjectURL(url);
+    img.src = url;
+    img.style.display = "block";
+  });
+}
+
 window.addEventListener("load", () => {
+  bindPreview_("bookBankPhoto", "prevBook");
+  bindPreview_("idPhoto", "prevId");
+
   // แสดงรูปและชื่อ LINE ทันทีที่ LIFF พร้อม (ไม่ต้องรอ sheet API)
   const waitPic = setInterval(() => {
     const p = window.__LIFF_PROFILE__;
