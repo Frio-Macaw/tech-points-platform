@@ -75,7 +75,7 @@
 
   <div class="pts-card">
 
-    <div class="pts-uid">User ID: <span id="userId">-</span></div>
+    <div class="pts-uid">สวัสดี, <span id="displayName">-</span></div>
 
     <button id="btnLoadPoints" class="pts-btn-load" onclick="loadBalance()">เช็คแต้มสะสมปัจจุบัน</button>
 
@@ -199,8 +199,8 @@ window.addEventListener("load", () => {
     const p = window.__LIFF_PROFILE__;
     if (!p) return;
     clearInterval(waitUid);
-    const el = document.getElementById("userId");
-    if (el) el.textContent = p.userId || "-";
+    const el = document.getElementById("displayName");
+    if (el) el.textContent = p.displayName || "-";
   }, 100);
   setTimeout(() => clearInterval(waitUid), 8000);
 
