@@ -44,14 +44,23 @@
 <body>
 
 <div class="reg-wrap">
+
+  <div style="text-align:center;margin-bottom:16px">
+    <img src="Frio_logo_1.png" alt="FRIO" style="height:54px;object-fit:contain"
+      onerror="this.style.display='none'">
+  </div>
+
   <div class="reg-title">ลงทะเบียนช่าง</div>
 
   <div class="reg-card">
 
     <div class="reg-toprow">
       <span class="reg-badge">Members</span>
-      <img id="profilePic" class="reg-avatar" src="" alt=""
-        onerror="this.style.background='#F5D547';this.src=''">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span id="displayName" style="font-size:13px;color:#3392D2;font-weight:500"></span>
+        <img id="profilePic" class="reg-avatar" src="" alt=""
+          onerror="this.style.background='#F5D547';this.src=''">
+      </div>
     </div>
 
     <label class="reg-label">ชื่อจริง <span class="reg-req">*</span></label>
@@ -186,6 +195,9 @@ async function loadDraftFromSheet_(){
   // ดึงรูปโปรไฟล์และชื่อ LINE
   const picEl = document.getElementById("profilePic");
   if (picEl && p.pictureUrl) picEl.src = p.pictureUrl;
+
+  const nameEl = document.getElementById("displayName");
+  if (nameEl && p.displayName) nameEl.textContent = p.displayName;
 
   const r = await apiPost("members", "get", { userId: p.userId });
   if (!r || !r.ok || r.mode !== "found") {
