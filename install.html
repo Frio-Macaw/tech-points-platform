@@ -5,53 +5,99 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Install</title>
   <link rel="stylesheet" href="style.css?v=20260428_1">
+  <style>
+    body { margin: 0; padding: 0; background: linear-gradient(180deg, #9DE0E9 0%, #3891CE 100%); min-height: 100vh; }
+    .ins-wrap { padding: 24px 16px 40px; font-family: sans-serif; }
+    .ins-title { text-align: center; font-size: 22px; font-weight: 700; color: #02497E; margin-bottom: 16px; }
+    .ins-card { background: #2e2e2e; border-radius: 16px; padding: 16px; }
+    .ins-label { font-size: 13px; color: #F8FAFC; display: block; margin-bottom: 4px; margin-top: 14px; font-weight: 500; }
+    .ins-req { color: #ff4444; }
+    .ins-input {
+      width: 100%; box-sizing: border-box;
+      background: #3d3d3d; border: none; border-radius: 8px;
+      padding: 10px 12px; color: #F8FAFC; font-size: 14px;
+    }
+    .ins-input::placeholder { color: #b0b8c1; }
+    .ins-input:focus { outline: none; background: #4a4a4a; }
+    #serialNumber::placeholder { color: #3392D2; }
+    select.ins-input { color: #F8FAFC; }
+    select.ins-input option { color: #000; background: #fff; }
+    .ins-prev-img {
+      width: 100%; max-height: 200px; object-fit: cover;
+      border-radius: 10px; display: none; margin-top: 8px;
+      border: 1px solid #555;
+    }
+    .ins-hr { height: 1px; background: #444; margin: 20px 0 16px; }
+    .ins-btn-save {
+      width: 100%; background: #22c55e; border: none; border-radius: 8px;
+      padding: 13px; color: #fff; font-size: 15px; font-weight: 700;
+      margin-bottom: 10px; cursor: pointer;
+    }
+    .ins-btn-save:disabled { opacity: 0.6; }
+    .ins-btn-back {
+      width: 100%; background: #FFF9C4; border: none; border-radius: 8px;
+      padding: 13px; color: #02497E; font-size: 15px; font-weight: 700; cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="brand">
-    <img src="Logo-Macaw-สีดำ1.png" alt="logo" onerror="this.style.display='none'">
-    <div>
-      <div class="title">ติดตั้ง</div>
-      <div class="badge">Install</div>
-    </div>
-  </div>
 
-  <div class="card">
-    <div class="mini">UserId: <span id="userId">-</span></div>
+<div class="ins-wrap">
+  <div class="ins-title">บันทึกการติดตั้ง</div>
 
-    <label>ชื่อร้านค้า (Dealer) <span class="req">*</span></label>
-    <input id="dealer" placeholder="เช่น ร้านกอ จำกัด">
+  <div class="ins-card">
 
-    <label>ขนาด BTU ที่ติดตั้ง <span class="req">*</span></label>
-    <select id="btu" required>
+    <label class="ins-label">ชื่อร้านค้า (Dealer) <span class="ins-req">*</span></label>
+    <input class="ins-input" id="dealer" placeholder="เช่น ร้านกอ จำกัด">
+
+    <label class="ins-label">ขนาด BTU ที่ติดตั้ง <span class="ins-req">*</span></label>
+    <select class="ins-input" id="btu" required>
       <option value="">เลือก</option>
       <option value="09-12 BTU">09-12 BTU</option>
       <option value="18-24 BTU">18-24 BTU</option>
     </select>
 
-    <label>หมายเลขเครื่อง (Serial Number) <span class="req">*</span></label>
-    <input id="serialNumber" placeholder="SN..." required>
+    <label class="ins-label">หมายเลขเครื่อง (Serial Number) <span class="ins-req">*</span></label>
+    <input class="ins-input" id="serialNumber" placeholder="SMFC09V/IXXXXXXXX">
 
-    <label>รูปภาพหมายเลขเครื่อง (Serial Number)<span class="req">*</span></label>
-    <input id="serialNumberPhoto" type="file"
-  accept=".jpg,.jpeg,.heic,.heif,.dng,image/jpeg,image/heic,image/heif,image/dng,image/x-adobe-dng,image/*" required>
+    <label class="ins-label">รูปภาพหมายเลขเครื่อง (Serial Number) <span class="ins-req">*</span></label>
+    <input class="ins-input" id="serialNumberPhoto" type="file"
+      accept=".jpg,.jpeg,.heic,.heif,.dng,image/jpeg,image/heic,image/heif,image/dng,image/x-adobe-dng,image/*" required>
+    <img id="prevSN" class="ins-prev-img" alt="ตัวอย่างรูปหมายเลขเครื่อง">
 
-    <label>รูปติดตั้ง<span class="req">*</span></label>
-    <input id="installPhoto" type="file"
-  accept=".jpg,.jpeg,.heic,.heif,.dng,image/jpeg,image/heic,image/heif,image/dng,image/x-adobe-dng,image/*" required>
+    <label class="ins-label">รูปติดตั้ง <span class="ins-req">*</span></label>
+    <input class="ins-input" id="installPhoto" type="file"
+      accept=".jpg,.jpeg,.heic,.heif,.dng,image/jpeg,image/heic,image/heif,image/dng,image/x-adobe-dng,image/*" required>
+    <img id="prevInstall" class="ins-prev-img" alt="ตัวอย่างรูปติดตั้ง">
 
-    <div class="hr"></div>
-    <button id="btnInstallSave" class="btn primary" onclick="submitInstall()">บันทึก</button>
-    <div style="height:10px"></div>
-    <button class="btn" onclick="location.href='index.html'">กลับเมนู</button>
-    <div id="toast" class="mini"></div>
+    <div class="ins-hr"></div>
+    <button id="btnInstallSave" class="ins-btn-save" onclick="submitInstall()">บันทึก</button>
+    <button class="ins-btn-back" onclick="location.href='index.html'">กลับเมนู</button>
+    <div id="toast" class="mini" style="margin-top:10px"></div>
     <div id="resultBox" class="result-box"></div>
+
   </div>
 </div>
 
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <script src="liff-starter.js?v=20260428_1"></script>
 <script>
+
+// แสดง preview รูปทันทีที่เลือกไฟล์
+function bindPreview_(inputId, imgId){
+  const inp = document.getElementById(inputId);
+  const img = document.getElementById(imgId);
+  if (!inp || !img) return;
+  inp.addEventListener("change", () => {
+    const file = inp.files?.[0];
+    if (!file) { img.style.display = "none"; img.src = ""; return; }
+    const url = URL.createObjectURL(file);
+    img.onload = () => URL.revokeObjectURL(url);
+    img.src = url;
+    img.style.display = "block";
+  });
+}
+
 function getFileExt_(file){
   const name = String(file?.name || "");
   const m = name.match(/\.([^.]+)$/);
@@ -70,7 +116,6 @@ function readFileAsDataUrl_(file){
 function isCanvasFriendlyImage_(file){
   const type = String(file?.type || "").toLowerCase();
   const ext = getFileExt_(file);
-
   return (
     /^image\/(jpeg|jpg|png|webp|gif|bmp)$/i.test(type) ||
     ["jpg", "jpeg", "png", "webp", "gif", "bmp"].includes(ext)
@@ -78,34 +123,21 @@ function isCanvasFriendlyImage_(file){
 }
 
 async function canvasToJpegDataUrl_(file, opt = {}){
-  const {
-    maxW = 1600,
-    quality = 0.82
-  } = opt;
-
+  const { maxW = 1600, quality = 0.82 } = opt;
   const imgUrl = URL.createObjectURL(file);
   try{
     const img = new Image();
     img.src = imgUrl;
-
-    await new Promise((res, rej) => {
-      img.onload = res;
-      img.onerror = rej;
-    });
-
+    await new Promise((res, rej) => { img.onload = res; img.onerror = rej; });
     const scale = Math.min(1, maxW / (img.width || 1));
     const w = Math.max(1, Math.round(img.width * scale));
     const h = Math.max(1, Math.round(img.height * scale));
-
     const canvas = document.createElement("canvas");
-    canvas.width = w;
-    canvas.height = h;
-
+    canvas.width = w; canvas.height = h;
     const ctx = canvas.getContext("2d");
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = "high";
     ctx.drawImage(img, 0, 0, w, h);
-
     return canvas.toDataURL("image/jpeg", quality);
   } finally {
     URL.revokeObjectURL(imgUrl);
@@ -114,55 +146,28 @@ async function canvasToJpegDataUrl_(file, opt = {}){
 
 async function fileToDataUrlCompressed_(file, opt = {}){
   if (!file) return "";
-
-  const {
-    maxW = 1600,
-    quality = 0.82,
-    maxRawMb = 20
-  } = opt;
-
+  const { maxW = 1600, quality = 0.82, maxRawMb = 20 } = opt;
   const isCanvasFriendly = isCanvasFriendlyImage_(file);
-
   try{
-    // JPG/JPEG/PNG/WebP ฯลฯ -> บีบอัดเป็น JPEG
-    if (isCanvasFriendly) {
-      return await canvasToJpegDataUrl_(file, { maxW, quality });
-    }
-
-    // HEIC / HEIF / DNG -> ส่ง base64 เดิมตรง ๆ
-    if (file.size > maxRawMb * 1024 * 1024) {
+    if (isCanvasFriendly) return await canvasToJpegDataUrl_(file, { maxW, quality });
+    if (file.size > maxRawMb * 1024 * 1024)
       throw new Error(`ไฟล์ ${file.name || "รูปภาพ"} มีขนาดใหญ่เกิน ${maxRawMb} MB`);
-    }
-
     return await readFileAsDataUrl_(file);
-
   } catch (err) {
-    try {
-      return await readFileAsDataUrl_(file);
-    } catch (_) {
-      throw new Error(`ไม่สามารถอ่านไฟล์ ${file.name || ""} ได้`);
-    }
+    try { return await readFileAsDataUrl_(file); }
+    catch (_) { throw new Error(`ไม่สามารถอ่านไฟล์ ${file.name || ""} ได้`); }
   }
 }
 
 function showResult_(type, msg){
-  let box = document.getElementById("resultBox");
-
-  if (!box) {
-    const card = document.querySelector(".card");
-    box = document.createElement("div");
-    box.id = "resultBox";
-    box.className = "result-box";
-    if (card) card.appendChild(box);
-    else document.body.appendChild(box);
-  }
-
+  const box = document.getElementById("resultBox");
+  if (!box) return;
   box.className = "result-box " + (
-  type === "ok" ? "result-ok" :
-  type === "warn" ? "result-warn" :
-  type === "loading" ? "result-loading" :
-  "result-err"
-);
+    type === "ok" ? "result-ok" :
+    type === "warn" ? "result-warn" :
+    type === "loading" ? "result-loading" :
+    "result-err"
+  );
   box.textContent = msg;
   box.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
@@ -177,7 +182,7 @@ function setInstallLoading_(isLoading, msg){
   }
   if (isLoading && msg) showResult_("loading", msg);
 }
-  
+
 async function submitInstall(){
   try{
     const p = await waitProfile_();
@@ -189,11 +194,11 @@ async function submitInstall(){
     const snFile = document.getElementById("serialNumberPhoto")?.files?.[0] || null;
     const inFile = document.getElementById("installPhoto")?.files?.[0] || null;
 
-    if (!dealer) return showResult_("err", "❌ กรุณากรอก Dealer");
-    if (!btu) return showResult_("err", "❌ กรุณาเลือก BTU");
+    if (!dealer)       return showResult_("err", "❌ กรุณากรอกชื่อร้านค้า");
+    if (!btu)          return showResult_("err", "❌ กรุณาเลือก BTU");
     if (!serialNumber) return showResult_("err", "❌ กรุณากรอก Serial Number");
-    if (!snFile) return showResult_("err", "❌ กรุณาแนบรูป Serial Number");
-    if (!inFile) return showResult_("err", "❌ กรุณาแนบรูปติดตั้ง");
+    if (!snFile)       return showResult_("err", "❌ กรุณาแนบรูป Serial Number");
+    if (!inFile)       return showResult_("err", "❌ กรุณาแนบรูปติดตั้ง");
 
     setInstallLoading_(true, "⏳ กำลังย่อรูปภาพหมายเลขเครื่อง...");
     const serialNumberPhoto = await fileToDataUrlCompressed_(snFile, { maxW: 1600, quality: 0.82 });
@@ -202,14 +207,7 @@ async function submitInstall(){
     const installPhoto = await fileToDataUrlCompressed_(inFile, { maxW: 1600, quality: 0.82 });
 
     setInstallLoading_(true, "⏳ กำลังส่งข้อมูลไปยังระบบ...");
-    const payload = {
-      userId: p.userId,
-      dealer,
-      btu,
-      serialNumber,
-      serialNumberPhoto,
-      installPhoto
-    };
+    const payload = { userId: p.userId, dealer, btu, serialNumber, serialNumberPhoto, installPhoto };
 
     const r = await apiPost("install", "create", payload);
 
@@ -222,15 +220,13 @@ async function submitInstall(){
       resetInstallForm_();
     } else {
       const code = (r && r.error) ? r.error : "unknown";
-
       const msgMap = {
         "FETCH_FAILED": "⚠️ ไม่สามารถส่งข้อมูลได้ กรุณาตรวจสอบอินเทอร์เน็ตแล้วลองใหม่",
-        "HTTP_403": "ไม่มีสิทธิ์เข้าถึงระบบ (403) กรุณาตรวจสิทธิ์การ Deploy",
-        "HTTP_404": "ไม่พบปลายทาง (404) กรุณาตรวจสอบ WEB_APP_URL",
-        "HTTP_413": "ข้อมูล/ไฟล์ใหญ่เกินไป (413) กรุณาลองใหม่อีกครั้ง",
-        "INVALID_JSON": "ระบบตอบกลับผิดรูปแบบ กรุณาลองใหม่อีกครั้ง"
+        "HTTP_403": "ไม่มีสิทธิ์เข้าถึงระบบ (403)",
+        "HTTP_404": "ไม่พบปลายทาง (404)",
+        "HTTP_413": "ข้อมูล/ไฟล์ใหญ่เกินไป (413) กรุณาลองใหม่",
+        "INVALID_JSON": "ระบบตอบกลับผิดรูปแบบ กรุณาลองใหม่"
       };
-
       showResult_("err", "❌ บันทึกไม่สำเร็จ: " + (msgMap[code] || code));
     }
 
@@ -247,8 +243,15 @@ function resetInstallForm_(){
   document.getElementById("serialNumber").value = "";
   document.getElementById("serialNumberPhoto").value = "";
   document.getElementById("installPhoto").value = "";
+  document.getElementById("prevSN").style.display = "none";
+  document.getElementById("prevInstall").style.display = "none";
 }
+
+window.addEventListener("load", () => {
+  bindPreview_("serialNumberPhoto", "prevSN");
+  bindPreview_("installPhoto", "prevInstall");
+});
 </script>
-  
+
 </body>
 </html>
