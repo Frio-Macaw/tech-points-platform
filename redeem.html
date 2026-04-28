@@ -5,49 +5,130 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Redeem</title>
   <link rel="stylesheet" href="style.css?v=20260428_1">
+  <style>
+    body { margin: 0; padding: 0; background: linear-gradient(180deg, #9DE0E9 0%, #3891CE 100%); min-height: 100vh; }
+    .rdm-wrap { padding: 24px 16px 40px; font-family: sans-serif; }
+    .rdm-title { text-align: center; font-size: 22px; font-weight: 700; color: #02497E; margin-bottom: 16px; }
+    .rdm-card { background: #2e2e2e; border-radius: 16px; padding: 16px; }
+
+    .rdm-uid { font-size: 12px; color: #888; margin-bottom: 14px; }
+
+    /* กล่องแสดงแต้มคงเหลือ - 2 BTU + รวม */
+    .rdm-bal-row { display: flex; gap: 8px; margin-bottom: 10px; }
+    .rdm-bal-box { flex: 1; border-radius: 10px; padding: 10px 10px 12px; }
+    .rdm-bal-box.b1 { background: #3392D2; }
+    .rdm-bal-box.b2 { background: #02497E; }
+    .rdm-bal-title { font-size: 12px; color: #fff; font-weight: 700; margin-bottom: 2px; }
+    .rdm-bal-sub { font-size: 10px; color: rgba(255,255,255,0.7); margin-bottom: 6px; }
+    .rdm-bal-val { display: flex; align-items: center; gap: 5px; }
+    .rdm-coin {
+      width: 18px; height: 18px; background: #F5C842; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px; font-weight: 700; color: #7a5700; flex-shrink: 0;
+    }
+    .rdm-bal-num { font-size: 17px; font-weight: 800; color: #fff; }
+    .rdm-bal-unit { font-size: 11px; color: rgba(255,255,255,0.8); }
+
+    /* กล่องรวมทั้งหมด */
+    .rdm-bal-total {
+      background: #3d3d3d; border-radius: 10px;
+      padding: 10px 14px; margin-bottom: 16px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .rdm-bal-total-label { font-size: 13px; color: #F8FAFC; }
+    .rdm-bal-total-val { font-size: 17px; font-weight: 800; color: #22c55e; }
+
+    /* Form */
+    .rdm-label { font-size: 13px; color: #F8FAFC; display: block; margin-bottom: 4px; margin-top: 14px; font-weight: 500; }
+    .rdm-req { color: #ff4444; }
+    .rdm-input {
+      width: 100%; box-sizing: border-box;
+      background: #3d3d3d; border: none; border-radius: 8px;
+      padding: 10px 12px; color: #F8FAFC; font-size: 14px;
+    }
+    .rdm-input::placeholder { color: #b0b8c1; }
+    .rdm-input:focus { outline: none; background: #4a4a4a; }
+    select.rdm-input { color: #F8FAFC; }
+    select.rdm-input option { color: #000; background: #fff; }
+
+    /* hint */
+    .rdm-hint { font-size: 12px; color: #E8B800; margin-top: 8px; padding-left: 2px; }
+
+    .rdm-hr { height: 1px; background: #444; margin: 20px 0 14px; }
+
+    /* ปุ่มยืนยัน - แดง */
+    .rdm-btn-confirm {
+      width: 100%; background: #ef4444; border: none; border-radius: 8px;
+      padding: 13px; color: #fff; font-size: 15px; font-weight: 700;
+      margin-bottom: 10px; cursor: pointer;
+    }
+    .rdm-btn-confirm:disabled { opacity: 0.6; }
+
+    /* ปุ่มกลับเมนู */
+    .rdm-btn-back {
+      width: 100%; background: #FFF9C4; border: none; border-radius: 8px;
+      padding: 13px; color: #02497E; font-size: 15px; font-weight: 700; cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="brand">
-    <img src="Logo-Macaw-สีดำ1.png" alt="logo" onerror="this.style.display='none'">
-    <div>
-      <div class="title">แลกแต้ม</div>
-      <div class="badge">Redeems</div>
+
+<div class="rdm-wrap">
+  <div class="rdm-title">แลกแต้ม</div>
+
+  <div class="rdm-card">
+
+    <div class="rdm-uid">User ID: <span id="userId">-</span></div>
+
+    <div id="redeemStatusBox" class="result-box" style="display:none"></div>
+
+    <!-- แต้มคงเหลือ 2 กล่อง BTU -->
+    <div class="rdm-bal-row">
+      <div class="rdm-bal-box b1">
+        <div class="rdm-bal-title">09 - 12 BTU</div>
+        <div class="rdm-bal-sub">คงเหลือ:</div>
+        <div class="rdm-bal-val">
+          <div class="rdm-coin">P</div>
+          <span class="rdm-bal-num" id="balance0912">-</span>
+          <span class="rdm-bal-unit">แต้ม</span>
+        </div>
+      </div>
+      <div class="rdm-bal-box b2">
+        <div class="rdm-bal-title">18 - 24 BTU</div>
+        <div class="rdm-bal-sub">คงเหลือ:</div>
+        <div class="rdm-bal-val">
+          <div class="rdm-coin">P</div>
+          <span class="rdm-bal-num" id="balance1824">-</span>
+          <span class="rdm-bal-unit">แต้ม</span>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <div class="card">
-    <div class="mini">UserId: <span id="userId">-</span></div>
+    <!-- แต้มรวมทั้งหมด -->
+    <div class="rdm-bal-total">
+      <span class="rdm-bal-total-label">แต้มคงเหลือรวมทั้งหมด</span>
+      <span class="rdm-bal-total-val"><span id="balanceTotal">-</span> แต้ม</span>
+    </div>
 
-<div id="redeemStatusBox" class="result-box" style="display:none"></div>
+    <!-- ฟอร์มแลกแต้ม -->
+    <label class="rdm-label">ประเภทการแลกแต้ม <span class="rdm-req">*</span></label>
+    <select class="rdm-input" id="btu" required>
+      <option value="">เลือก</option>
+      <option value="09-12 BTU">09-12 BTU</option>
+      <option value="18-24 BTU">18-24 BTU</option>
+      <option value="TOTAL">แต้มรวมทั้งหมด (ขั้นต่ำ 500 แต้ม)</option>
+    </select>
 
-<div class="result-box">
-  <div><b>แต้มคงเหลือที่ใช้ได้</b></div>
-  <div class="mini" style="margin-top:8px">09-12 BTU: <b id="balance0912">-</b> แต้ม</div>
-  <div class="mini">18-24 BTU: <b id="balance1824">-</b> แต้ม</div>
-  <div class="mini">รวมทั้งหมด: <b id="balanceTotal">-</b> แต้ม</div>
-</div>
+    <label class="rdm-label">จำนวนแต้มที่ต้องการใช้ <span class="rdm-req">*</span></label>
+    <input class="rdm-input" id="points" type="number" min="1" step="1" placeholder="เช่น 10">
 
-<label>ประเภทการแลกแต้ม</label>
-<select id="btu" required>
-  <option value="">เลือก</option>
-  <option value="09-12 BTU">09-12 BTU</option>
-  <option value="18-24 BTU">18-24 BTU</option>
-  <option value="TOTAL">แต้มรวมทั้งหมด (ขั้นต่ำ 500 แต้ม)</option>
-</select>
+    <div id="redeemHint" class="rdm-hint">* เมื่อยืนยันแลก แต้มจะถูกหักทันทีเพื่อ "จองสิทธิ์"</div>
 
-<label>จำนวนแต้มที่ต้องการใช้</label>
-<input id="points" type="number" min="1" step="1" placeholder="เช่น 10 หรือ 500">
+    <div class="rdm-hr"></div>
+    <button id="btnRedeemSave" class="rdm-btn-confirm" onclick="submitRedeem()">ยืนยันแลกแต้ม</button>
+    <button class="rdm-btn-back" onclick="location.href='index.html'">กลับเมนู</button>
+    <div id="toast" class="mini" style="margin-top:10px"></div>
 
-<div id="redeemHint" class="mini">
-  * เมื่อยืนยันแลก แต้มจะถูกหักทันทีเพื่อ “จองสิทธิ์”
-</div>
-
-<div class="hr"></div>
-<button id="btnRedeemSave" class="btn danger" onclick="submitRedeem()">ยืนยันแลกแต้ม</button>
-<div style="height:10px"></div>
-<button class="btn" onclick="location.href='index.html'">กลับเมนู</button>
-<div id="toast" class="mini"></div>
   </div>
 </div>
 
@@ -57,11 +138,10 @@
 function showRedeemStatus_(type, msg){
   const box = document.getElementById("redeemStatusBox");
   if (!box) return;
-
   box.style.display = "block";
   box.className = "result-box " + (
-    type === "ok" ? "result-ok" :
-    type === "warn" ? "result-warn" :
+    type === "ok"      ? "result-ok" :
+    type === "warn"    ? "result-warn" :
     type === "loading" ? "result-loading" :
     "result-err"
   );
@@ -76,23 +156,19 @@ function setRedeemLoading_(isLoading, msg){
       ? `<span class="spinner"></span>กำลังทำรายการ...`
       : `ยืนยันแลกแต้ม`;
   }
-
-  if (isLoading && msg){
-    showRedeemStatus_("loading", msg);
-  }
+  if (isLoading && msg) showRedeemStatus_("loading", msg);
 }
 
 function refreshRedeemHint_(){
   const mode = document.getElementById("btu").value;
   const hint = document.getElementById("redeemHint");
   if (!hint) return;
-
   if (mode === "TOTAL"){
-    hint.textContent = "* แลกแบบแต้มรวม ต้องใช้ขั้นต่ำ 500 แต้ม และระบบจะตัดแต้มเก่าไปใหม่";
+    hint.textContent = "* แลกแบบแต้มรวม ต้องใช้ขั้นต่ำ 500 แต้ม ระบบจะตัดแต้มเก่าไปใหม่";
   } else if (mode === "09-12 BTU" || mode === "18-24 BTU"){
-    hint.textContent = "* แลกตาม BTU เดิม ระบบจะตัดแต้มเก่าไปใหม่ใน BTU นั้น";
+    hint.textContent = "* แลกตาม BTU ที่เลือก ระบบจะตัดแต้มเก่าไปใหม่ใน BTU นั้น";
   } else {
-    hint.textContent = "* เมื่อยืนยันแลก แต้มจะถูกหักทันทีเพื่อ “จองสิทธิ์”";
+    hint.textContent = "* เมื่อยืนยันแลก แต้มจะถูกหักทันทีเพื่อ \"จองสิทธิ์\"";
   }
 }
 
@@ -100,19 +176,15 @@ async function loadRedeemBalances(){
   try{
     const p = await waitProfile_();
     if (!p) return;
-
     showRedeemStatus_("loading", "⏳ กำลังโหลดแต้มคงเหลือ...");
     const r = await apiPost("points", "balance", { userId: p.userId });
-
     if (!r || !r.ok){
       showRedeemStatus_("err", "❌ โหลดแต้มไม่สำเร็จ");
       return;
     }
-
-    document.getElementById("balance0912").textContent = r.balance0912 ?? 0;
-    document.getElementById("balance1824").textContent = r.balance1824 ?? 0;
+    document.getElementById("balance0912").textContent  = r.balance0912 ?? 0;
+    document.getElementById("balance1824").textContent  = r.balance1824 ?? 0;
     document.getElementById("balanceTotal").textContent = r.balance ?? 0;
-
     showRedeemStatus_("ok", "✅ โหลดแต้มคงเหลือเรียบร้อยแล้ว");
   } catch(err){
     showRedeemStatus_("err", "❌ เกิดข้อผิดพลาด: " + String(err));
@@ -125,23 +197,17 @@ async function submitRedeem(){
     if (!p) return toast("LIFF ยังไม่พร้อม กรุณาลองใหม่", false);
 
     const mode = document.getElementById("btu").value;
-    const pts = Number(document.getElementById("points").value || 0);
+    const pts  = Number(document.getElementById("points").value || 0);
 
     if (!mode) return toast("กรุณาเลือกประเภทการแลกแต้ม", false);
-    if (!Number.isFinite(pts) || pts <= 0) return toast("กรอกแต้มให้ถูกต้อง", false);
+    if (!Number.isFinite(pts) || pts <= 0) return toast("กรอกจำนวนแต้มให้ถูกต้อง", false);
 
     if (mode === "TOTAL" && pts < 500){
       return popup("แลกแต้มรวมได้ขั้นต่ำ 500 แต้ม", "เงื่อนไขไม่ถูกต้อง ❌");
     }
 
     setRedeemLoading_(true, "⏳ กำลังทำรายการแลกแต้ม...");
-    const payload = {
-      userId: p.userId,
-      btu: mode,
-      points: pts
-    };
-
-    const r = await apiPost("redeems", "create", payload);
+    const r = await apiPost("redeems", "create", { userId: p.userId, btu: mode, points: pts });
 
     if (r && r.ok){
       popup(`แลกสำเร็จ ✅ คงเหลือรวม ${r.balanceAfter} แต้ม`);
@@ -149,15 +215,11 @@ async function submitRedeem(){
       await loadRedeemBalances();
     } else {
       const msgMap = {
-        "TOTAL_REDEEM_MIN_500": "แลกแต้มรวมได้ขั้นต่ำ 500 แต้ม",
+        "TOTAL_REDEEM_MIN_500":      "แลกแต้มรวมได้ขั้นต่ำ 500 แต้ม",
         "INSUFFICIENT_TOTAL_BALANCE": "แต้มรวมคงเหลือไม่พอ",
-        "INSUFFICIENT_BTU_BALANCE": "แต้มคงเหลือของ BTU ที่เลือกไม่พอ"
+        "INSUFFICIENT_BTU_BALANCE":   "แต้มคงเหลือของ BTU ที่เลือกไม่พอ"
       };
-
-      popup(
-        msgMap[r?.error] || ("แลกไม่สำเร็จ: " + (r?.error || "unknown")),
-        "เกิดข้อผิดพลาด ❌"
-      );
+      popup(msgMap[r?.error] || ("แลกไม่สำเร็จ: " + (r?.error || "unknown")), "เกิดข้อผิดพลาด ❌");
     }
   } catch(err){
     popup("แลกไม่สำเร็จ: " + String(err), "เกิดข้อผิดพลาด ❌");
@@ -167,19 +229,29 @@ async function submitRedeem(){
 }
 
 window.addEventListener("load", () => {
+  // แสดง userId
+  const waitUid = setInterval(() => {
+    const p = window.__LIFF_PROFILE__;
+    if (!p) return;
+    clearInterval(waitUid);
+    const el = document.getElementById("userId");
+    if (el) el.textContent = p.userId || "-";
+  }, 100);
+  setTimeout(() => clearInterval(waitUid), 8000);
+
+  // auto-load แต้ม
   setTimeout(() => {
     loadRedeemBalances().catch(() => {});
     refreshRedeemHint_();
-  }, 300);
+  }, 400);
 });
 
 document.addEventListener("change", (e) => {
-  if (e.target && e.target.id === "btu"){
-    refreshRedeemHint_();
-  }
+  if (e.target && e.target.id === "btu") refreshRedeemHint_();
 });
 </script>
-<!-- ✅ Popup Modal -->
+
+<!-- Popup Modal -->
 <div id="modalOverlay" class="modal-overlay" onclick="closePopup()">
   <div class="modal" onclick="event.stopPropagation()">
     <h3 id="modalTitle">สำเร็จ ✅</h3>
@@ -189,6 +261,6 @@ document.addEventListener("change", (e) => {
     </div>
   </div>
 </div>
-  
+
 </body>
 </html>
