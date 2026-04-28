@@ -5,37 +5,73 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Tech Points Platform</title>
   <link rel="stylesheet" href="style.css?v=20260428_1">
+  <style>
+    body { margin: 0; padding: 0; background: linear-gradient(180deg, #9DE0E9 0%, #3891CE 100%); min-height: 100vh; }
+    .idx-wrap { padding: 28px 16px 40px; font-family: sans-serif; }
+    .idx-logo { text-align: center; margin-bottom: 20px; }
+    .idx-logo img { height: 60px; object-fit: contain; }
+    .idx-card { background: #fff; border-radius: 20px; padding: 20px 16px 24px; }
+    .idx-title { text-align: center; font-size: 20px; font-weight: 700; color: #02497E; margin-bottom: 16px; }
+    .idx-profile { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px; }
+    .idx-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; background: #F5D547; flex-shrink: 0; }
+    .idx-username { font-size: 15px; color: #3392D2; font-weight: 600; }
+    .idx-btn { width: 100%; border: none; border-radius: 10px; padding: 14px; font-size: 15px; font-weight: 700; cursor: pointer; margin-bottom: 10px; display: block; }
+    .idx-btn:last-child { margin-bottom: 0; }
+    .idx-btn-1 { background: #FFF9C4; color: #02497E; }
+    .idx-btn-2 { background: #22B7E9; color: #fff; }
+    .idx-btn-3 { background: #3392D2; color: #fff; }
+    .idx-btn-4 { background: #02497E; color: #fff; }
+  </style>
 </head>
-<body class="menu-home">
-  <div class="wrap">
-    <div class="brand">
-      <!-- ถ้ายังไม่มีโลโก้ ให้ลบ img หรืออัปโหลดไฟล์ให้ชื่อเดียวกัน -->
-      <img src="Logo-Macaw-สีดำ1.png" alt="logo" onerror="this.style.display='none'">
-      <div>
-        <div class="title">Tech Points Platform</div>
-        <div class="badge">LIFF Menu</div>
-      </div>
-    </div>
+<body>
 
-    <div class="card">
-      <div class="mini">UserId: <span id="userId">-</span></div>
-      <div class="mini">Name: <span id="displayName">-</span></div>
-      <div class="hr"></div>
+<div class="idx-wrap">
 
-      <button class="btn primary" onclick="location.href='register.html'">1) ลงทะเบียน (Members)</button>
-      <div style="height:10px"></div>
-      <button class="btn" onclick="location.href='install.html'">2) ติดตั้ง (Install)</button>
-      <div style="height:10px"></div>
-      <button class="btn" onclick="location.href='points.html'">3) เช็คแต้ม (Points)</button>
-      <div style="height:10px"></div>
-      <button class="btn danger" onclick="location.href='redeem.html'">4) แลกแต้ม (Redeems)</button>
-
-      <div id="toast" class="mini"></div>
-    </div>
+  <div class="idx-logo">
+    <img src="frio-logo.png" alt="FRIO" onerror="this.style.display='none'">
   </div>
 
-  <!-- สำคัญ: โหลด SDK ก่อน -->
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <script src="liff-starter.js?v=20260428_1"></script>
+  <div class="idx-card">
+
+    <div class="idx-title">Tech Points Platform</div>
+
+    <div class="idx-profile">
+      <img id="profilePic" class="idx-avatar" src="" alt=""
+        onerror="this.style.background='#F5D547';this.removeAttribute('src')">
+      <span id="displayName" class="idx-username">-</span>
+    </div>
+
+    <button class="idx-btn idx-btn-1" onclick="location.href='register.html'">ลงทะเบียน (Register)</button>
+    <button class="idx-btn idx-btn-2" onclick="location.href='install.html'">บันทึกการติดตั้ง (Installation)</button>
+    <button class="idx-btn idx-btn-3" onclick="location.href='points.html'">เช็คแต้ม (Points)</button>
+    <button class="idx-btn idx-btn-4" onclick="location.href='redeem.html'">แลกแต้ม (Redeem)</button>
+
+    <div id="toast" class="mini" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<script src="liff-starter.js?v=20260428_1"></script>
+
+<script>
+window.addEventListener("load", () => {
+  // รอ LIFF init แล้วดึงรูปและชื่อมาแสดง
+  const wait = setInterval(() => {
+    const p = window.__LIFF_PROFILE__;
+    if (!p) return;
+    clearInterval(wait);
+
+    const picEl = document.getElementById("profilePic");
+    if (picEl && p.pictureUrl) picEl.src = p.pictureUrl;
+
+    const nameEl = document.getElementById("displayName");
+    if (nameEl) nameEl.textContent = p.displayName || "-";
+  }, 100);
+
+  // timeout 8 วินาที กันค้าง
+  setTimeout(() => clearInterval(wait), 8000);
+});
+</script>
+
 </body>
 </html>
