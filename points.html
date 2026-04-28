@@ -11,7 +11,8 @@
     .pts-title { text-align: center; font-size: 22px; font-weight: 700; color: #02497E; margin-bottom: 16px; }
     .pts-card { background: #2e2e2e; border-radius: 16px; padding: 16px; }
 
-    .pts-uid { font-size: 12px; color: #888; margin-bottom: 14px; }
+    .pts-toprow { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-bottom: 16px; }
+    .pts-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: #F5D547; flex-shrink: 0; }
 
     /* ปุ่มโหลด - สีเหลือง */
     .pts-btn-load {
@@ -75,7 +76,11 @@
 
   <div class="pts-card">
 
-    <div class="pts-uid">สวัสดี, <span id="displayName">-</span></div>
+    <div class="pts-toprow">
+      <span id="displayName" style="font-size:13px;color:#3392D2;font-weight:600"></span>
+      <img id="profilePic" class="pts-avatar" src="" alt=""
+        onerror="this.style.background='#F5D547';this.removeAttribute('src')">
+    </div>
 
     <button id="btnLoadPoints" class="pts-btn-load" onclick="loadBalance()">เช็คแต้มสะสมปัจจุบัน</button>
 
@@ -199,8 +204,10 @@ window.addEventListener("load", () => {
     const p = window.__LIFF_PROFILE__;
     if (!p) return;
     clearInterval(waitUid);
-    const el = document.getElementById("displayName");
-    if (el) el.textContent = p.displayName || "-";
+    const nameEl = document.getElementById("displayName");
+    if (nameEl) nameEl.textContent = p.displayName || "";
+    const picEl = document.getElementById("profilePic");
+    if (picEl && p.pictureUrl) picEl.src = p.pictureUrl;
   }, 100);
   setTimeout(() => clearInterval(waitUid), 8000);
 
