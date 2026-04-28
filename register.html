@@ -163,6 +163,23 @@ async function fileToDataUrl_(file, opt = {}){
   }
 }
 
+// บีบรูปและตรวจขนาด — ถ้าใหญ่เกิน 350KB หลังบีบให้คืน "" และแจ้งเตือน
+async function safeEncodeImg_(file, label){
+  if (!file) return "";
+  try {
+    const data = await fileToDataUrl_(file, { maxW: 700, quality: 0.60, maxRawMb: 10 });
+    const kb = Math.round(data.length * 0.75 / 1024);
+    if (kb > 350) {
+      toast(`⚠️ ${label} ขนาดใหญ่เกิน (${kb} KB) ระบบจะส่งโดยไม่มีรูป`, false);
+      return "";
+    }
+    return data;
+  } catch(e) {
+    toast(`⚠️ อ่าน${label}ไม่ได้: ${e.message}`, false);
+    return "";
+  }
+}
+
 function driveIdFromUrl_(url){
   const s = String(url || "").trim();
   if (!s) return "";
@@ -275,10 +292,10 @@ async function submitRegister(){
     const idFile   = document.getElementById("idPhoto")?.files?.[0] || null;
 
     setRegisterLoading_(true, "⏳ กำลังเตรียมรูปสมุดบัญชี...");
-    const bookBankPhoto = await fileToDataUrl_(bookFile, { maxW: 1200, quality: 0.75 });
+    const bookBankPhoto = await safeEncodeImg_(bookFile, "รูปสมุดบัญชี");
 
     setRegisterLoading_(true, "⏳ กำลังเตรียมรูปบัตรประชาชน...");
-    const idPhoto = await fileToDataUrl_(idFile, { maxW: 1200, quality: 0.75 });
+    const idPhoto = await safeEncodeImg_(idFile, "รูปบัตรประชาชน");
 
     const payload = {
       userId: p.userId,
