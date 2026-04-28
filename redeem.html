@@ -110,7 +110,7 @@
 
   <div class="rdm-card">
 
-    <div class="rdm-uid">User ID: <span id="userId">-</span></div>
+    <div class="rdm-uid">สวัสดี, <span id="displayName">-</span></div>
 
     <div id="redeemStatusBox" class="result-box" style="display:none"></div>
 
@@ -392,8 +392,8 @@ window.addEventListener("load", () => {
     const p = window.__LIFF_PROFILE__;
     if (!p) return;
     clearInterval(waitUid);
-    const el = document.getElementById("userId");
-    if (el) el.textContent = p.userId || "-";
+    const el = document.getElementById("displayName");
+    if (el) el.textContent = p.displayName || "-";
   }, 100);
   setTimeout(() => clearInterval(waitUid), 8000);
 
