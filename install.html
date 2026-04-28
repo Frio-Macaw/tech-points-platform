@@ -159,6 +159,23 @@ async function fileToDataUrlCompressed_(file, opt = {}){
   }
 }
 
+// บีบรูปและตรวจขนาด — ถ้าใหญ่เกิน 350KB หลังบีบให้คืน "" และแจ้งเตือน
+async function safeEncodeImg_(file, label){
+  if (!file) return "";
+  try {
+    const data = await fileToDataUrlCompressed_(file, { maxW: 700, quality: 0.60, maxRawMb: 10 });
+    const kb = Math.round(data.length * 0.75 / 1024);
+    if (kb > 350) {
+      showResult_("warn", `⚠️ ${label} ขนาดใหญ่เกิน (${kb} KB) ระบบจะส่งโดยไม่มีรูป`);
+      return "";
+    }
+    return data;
+  } catch(e) {
+    showResult_("warn", `⚠️ อ่าน${label}ไม่ได้: ${e.message}`);
+    return "";
+  }
+}
+
 function showResult_(type, msg){
   const box = document.getElementById("resultBox");
   if (!box) return;
@@ -200,11 +217,11 @@ async function submitInstall(){
     if (!snFile)       return showResult_("err", "❌ กรุณาแนบรูป Serial Number");
     if (!inFile)       return showResult_("err", "❌ กรุณาแนบรูปติดตั้ง");
 
-    setInstallLoading_(true, "⏳ กำลังย่อรูปภาพหมายเลขเครื่อง...");
-    const serialNumberPhoto = await fileToDataUrlCompressed_(snFile, { maxW: 1200, quality: 0.75 });
+    setInstallLoading_(true, "⏳ กำลังเตรียมรูปหมายเลขเครื่อง...");
+    const serialNumberPhoto = await safeEncodeImg_(snFile, "รูปหมายเลขเครื่อง");
 
-    setInstallLoading_(true, "⏳ กำลังย่อรูปติดตั้ง...");
-    const installPhoto = await fileToDataUrlCompressed_(inFile, { maxW: 1200, quality: 0.75 });
+    setInstallLoading_(true, "⏳ กำลังเตรียมรูปติดตั้ง...");
+    const installPhoto = await safeEncodeImg_(inFile, "รูปติดตั้ง");
 
     setInstallLoading_(true, "⏳ กำลังส่งข้อมูลไปยังระบบ...");
     const payload = { userId: p.userId, dealer, btu, serialNumber, serialNumberPhoto, installPhoto };
