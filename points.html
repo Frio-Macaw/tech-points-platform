@@ -5,51 +5,129 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Points</title>
   <link rel="stylesheet" href="style.css?v=20260428_1">
+  <style>
+    body { margin: 0; padding: 0; background: linear-gradient(180deg, #9DE0E9 0%, #3891CE 100%); min-height: 100vh; }
+    .pts-wrap { padding: 24px 16px 40px; font-family: sans-serif; }
+    .pts-title { text-align: center; font-size: 22px; font-weight: 700; color: #02497E; margin-bottom: 16px; }
+    .pts-card { background: #2e2e2e; border-radius: 16px; padding: 16px; }
+
+    .pts-uid { font-size: 12px; color: #888; margin-bottom: 14px; }
+
+    /* ปุ่มโหลด - สีเหลือง */
+    .pts-btn-load {
+      width: 100%; background: #FFF9C4; border: none; border-radius: 8px;
+      padding: 13px; color: #02497E; font-size: 15px; font-weight: 700;
+      margin-bottom: 14px; cursor: pointer;
+    }
+    .pts-btn-load:disabled { opacity: 0.6; }
+
+    /* กล่องสรุปสีเขียว */
+    .pts-summary {
+      background: #22c55e; border-radius: 10px;
+      padding: 14px 16px; margin-bottom: 8px;
+    }
+    .pts-summary-row {
+      font-size: 14px; color: #fff; font-weight: 600; margin-bottom: 5px;
+    }
+    .pts-summary-row:last-child { margin-bottom: 0; }
+
+    /* วันที่อัปเดตล่าสุด */
+    .pts-date { font-size: 12px; color: #E8B800; margin-bottom: 12px; padding-left: 2px; }
+
+    /* 2 กล่อง BTU */
+    .pts-btu-row { display: flex; gap: 10px; margin-bottom: 14px; }
+    .pts-btu-box { flex: 1; border-radius: 10px; padding: 12px; }
+    .pts-btu-box.btu0912 { background: #3392D2; }
+    .pts-btu-box.btu1824 { background: #02497E; }
+    .pts-btu-title { font-size: 13px; color: #fff; font-weight: 700; margin-bottom: 3px; }
+    .pts-btu-sub { font-size: 11px; color: rgba(255,255,255,0.7); margin-bottom: 8px; }
+    .pts-btu-val { display: flex; align-items: center; gap: 6px; }
+    .pts-coin {
+      width: 22px; height: 22px; background: #F5C842; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: #7a5700; flex-shrink: 0;
+    }
+    .pts-btu-num { font-size: 20px; font-weight: 800; color: #fff; }
+    .pts-btu-unit { font-size: 12px; color: rgba(255,255,255,0.8); }
+
+    /* เงื่อนไข */
+    .pts-condition { display: flex; align-items: center; gap: 7px; margin-bottom: 16px; }
+    .pts-cond-dot {
+      width: 16px; height: 16px; background: #ef4444; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; color: #fff; font-weight: 700; flex-shrink: 0;
+    }
+    .pts-cond-text { font-size: 13px; color: #E8B800; }
+
+    .pts-hr { height: 1px; background: #444; margin: 14px 0; }
+
+    /* ปุ่มกลับเมนู */
+    .pts-btn-back {
+      width: 100%; background: #FFF9C4; border: none; border-radius: 8px;
+      padding: 13px; color: #02497E; font-size: 15px; font-weight: 700; cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="brand">
-    <img src="Logo-Macaw-สีดำ1.png" alt="logo" onerror="this.style.display='none'">
-    <div>
-      <div class="title">เช็คแต้ม</div>
-      <div class="badge">Points</div>
-    </div>
-  </div>
 
-  <div class="card">
-    <div class="mini">UserId: <span id="userId">-</span></div>
-    <div class="hr"></div>
+<div class="pts-wrap">
+  <div class="pts-title">เช็คแต้มสะสม</div>
 
-    <button id="btnLoadPoints" class="btn primary" onclick="loadBalance()">โหลดแต้มล่าสุด</button>
+  <div class="pts-card">
+
+    <div class="pts-uid">User ID: <span id="userId">-</span></div>
+
+    <button id="btnLoadPoints" class="pts-btn-load" onclick="loadBalance()">เช็คแต้มสะสมปัจจุบัน</button>
 
     <div id="pointsStatusBox" class="result-box" style="display:none"></div>
 
-<div class="hr"></div>
+    <div id="summaryBox" style="display:none">
 
-<div class="result-box">
-  <div><b>09-12 BTU</b></div>
-  <div class="mini">แต้มคงเหลือที่ยังไม่ได้ใช้</div>
-  <div style="font-size:24px;font-weight:800;margin-top:6px">
-    <span id="balance0912">-</span> แต้ม
-  </div>
-</div>
+      <!-- กล่องสรุปสีเขียว -->
+      <div class="pts-summary">
+        <div class="pts-summary-row">แต้มสะสมทั้งหมด: <span id="plus">-</span> แต้ม</div>
+        <div class="pts-summary-row">ใช้ไป: <span id="minus">-</span></div>
+        <div class="pts-summary-row">คงเหลือ: <span id="balance">-</span> แต้ม</div>
+      </div>
 
-<div class="result-box">
-  <div><b>18-24 BTU</b></div>
-  <div class="mini">แต้มคงเหลือที่ยังไม่ได้ใช้</div>
-  <div style="font-size:24px;font-weight:800;margin-top:6px">
-    <span id="balance1824">-</span> แต้ม
-  </div>
-</div>
+      <!-- วันที่อัปเดตล่าสุด -->
+      <div id="lastDateRow" class="pts-date" style="display:none">
+        อัปเดตล่าสุด <span id="lastDate"></span>
+      </div>
 
-<div class="hr"></div>
-<div class="mini">แต้มสะสมทั้งหมด: <span id="plus">-</span></div>
-<div class="mini">แต้มที่ใช้ไป: <span id="minus">-</span></div>
-<div class="mini">แต้มคงเหลือรวม: <b id="balance">-</b></div>
+      <!-- 2 กล่อง BTU -->
+      <div class="pts-btu-row">
+        <div class="pts-btu-box btu0912">
+          <div class="pts-btu-title">09 - 12 BTU</div>
+          <div class="pts-btu-sub">แต้มคงเหลือ:</div>
+          <div class="pts-btu-val">
+            <div class="pts-coin">P</div>
+            <span class="pts-btu-num" id="balance0912">-</span>
+            <span class="pts-btu-unit">แต้ม</span>
+          </div>
+        </div>
+        <div class="pts-btu-box btu1824">
+          <div class="pts-btu-title">18 - 24 BTU</div>
+          <div class="pts-btu-sub">แต้มคงเหลือ:</div>
+          <div class="pts-btu-val">
+            <div class="pts-coin">P</div>
+            <span class="pts-btu-num" id="balance1824">-</span>
+            <span class="pts-btu-unit">แต้ม</span>
+          </div>
+        </div>
+      </div>
 
-<div class="hr"></div>
-<button class="btn" onclick="location.href='index.html'">กลับเมนู</button>
-<div id="toast" class="mini"></div>
+      <!-- เงื่อนไข -->
+      <div class="pts-condition">
+        <div class="pts-cond-dot">!</div>
+        <span class="pts-cond-text">1 ชุด = 1 แต้ม</span>
+      </div>
+
+    </div>
+
+    <div class="pts-hr"></div>
+    <button class="pts-btn-back" onclick="location.href='index.html'">กลับเมนู</button>
+    <div id="toast" class="mini"></div>
   </div>
 </div>
 
@@ -57,13 +135,12 @@
 <script src="liff-starter.js?v=20260428_1"></script>
 <script>
 function showPointsStatus_(type, msg){
-  let box = document.getElementById("pointsStatusBox");
+  const box = document.getElementById("pointsStatusBox");
   if (!box) return;
-
   box.style.display = "block";
   box.className = "result-box " + (
-    type === "ok" ? "result-ok" :
-    type === "warn" ? "result-warn" :
+    type === "ok"      ? "result-ok" :
+    type === "warn"    ? "result-warn" :
     type === "loading" ? "result-loading" :
     "result-err"
   );
@@ -75,13 +152,10 @@ function setPointsLoading_(isLoading, msg){
   if (btn){
     btn.disabled = isLoading;
     btn.innerHTML = isLoading
-      ? `<span class="spinner"></span>กำลังโหลดข้อมูล...`
-      : `โหลดแต้มล่าสุด`;
+      ? `<span class="spinner"></span>กำลังโหลด...`
+      : `เช็คแต้มสะสมปัจจุบัน`;
   }
-
-  if (isLoading && msg){
-    showPointsStatus_("loading", msg);
-  }
+  if (isLoading && msg) showPointsStatus_("loading", msg);
 }
 
 async function loadBalance(){
@@ -92,19 +166,25 @@ async function loadBalance(){
     setPointsLoading_(true, "⏳ กำลังโหลดข้อมูลแต้มล่าสุด...");
 
     const r = await apiPost("points", "balance", { userId: p.userId });
-    if (!r.ok) {
-      showPointsStatus_("err", "❌ โหลดไม่สำเร็จ: " + (r.error || "unknown"));
+    if (!r || !r.ok){
+      showPointsStatus_("err", "❌ โหลดไม่สำเร็จ: " + (r?.error || "unknown"));
       return;
     }
 
     document.getElementById("balance0912").textContent = r.balance0912 ?? 0;
     document.getElementById("balance1824").textContent = r.balance1824 ?? 0;
-    document.getElementById("plus").textContent = r.plus ?? 0;
-    document.getElementById("minus").textContent = r.minus ?? 0;
-    document.getElementById("balance").textContent = r.balance ?? 0;
+    document.getElementById("plus").textContent        = r.plus ?? 0;
+    document.getElementById("minus").textContent       = r.minus ?? 0;
+    document.getElementById("balance").textContent     = r.balance ?? 0;
 
+    // วันที่ล่าสุดจาก Points > createdAt (ถ้า backend ส่งมา)
+    if (r.lastCreatedAt){
+      document.getElementById("lastDate").textContent     = r.lastCreatedAt;
+      document.getElementById("lastDateRow").style.display = "block";
+    }
+
+    document.getElementById("summaryBox").style.display = "block";
     showPointsStatus_("ok", "✅ โหลดข้อมูลแต้มล่าสุดเรียบร้อยแล้ว");
-    toast("อัปเดตล่าสุด ✅", true);
 
   } catch(err){
     showPointsStatus_("err", "❌ เกิดข้อผิดพลาด: " + String(err));
@@ -112,6 +192,22 @@ async function loadBalance(){
     setPointsLoading_(false);
   }
 }
+
+window.addEventListener("load", () => {
+  // แสดง userId ทันที
+  const waitUid = setInterval(() => {
+    const p = window.__LIFF_PROFILE__;
+    if (!p) return;
+    clearInterval(waitUid);
+    const el = document.getElementById("userId");
+    if (el) el.textContent = p.userId || "-";
+  }, 100);
+  setTimeout(() => clearInterval(waitUid), 8000);
+
+  // auto-load แต้มเมื่อเปิดหน้า
+  setTimeout(() => loadBalance().catch(() => {}), 400);
+});
 </script>
+
 </body>
 </html>
