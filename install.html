@@ -47,10 +47,10 @@
 
   <div class="ins-card">
 
-    <label class="ins-label">ชื่อร้านค้า (ร้านค้าที่ซื้อแอร์)<span class="ins-req">*</span></label>
+    <label class="ins-label">ชื่อร้านค้า (Dealer) <span class="ins-req">*</span></label>
     <input class="ins-input" id="dealer" placeholder="เช่น ร้านกอ จำกัด">
 
-    <label class="ins-label">ขนาด BTU <span class="ins-req">*</span></label>
+    <label class="ins-label">ขนาด BTU ที่ติดตั้ง <span class="ins-req">*</span></label>
     <select class="ins-input" id="btu" required>
       <option value="">เลือก</option>
       <option value="09-12 BTU">09-12 BTU</option>
@@ -65,7 +65,7 @@
       accept=".jpg,.jpeg,.heic,.heif,.dng,image/jpeg,image/heic,image/heif,image/dng,image/x-adobe-dng,image/*" required>
     <img id="prevSN" class="ins-prev-img" alt="ตัวอย่างรูปหมายเลขเครื่อง">
 
-    <label class="ins-label">รูปภาพติดตั้ง <span class="ins-req">*</span></label>
+    <label class="ins-label">รูปติดตั้ง <span class="ins-req">*</span></label>
     <input class="ins-input" id="installPhoto" type="file"
       accept=".jpg,.jpeg,.heic,.heif,.dng,image/jpeg,image/heic,image/heif,image/dng,image/x-adobe-dng,image/*" required>
     <img id="prevInstall" class="ins-prev-img" alt="ตัวอย่างรูปติดตั้ง">
@@ -201,10 +201,10 @@ async function submitInstall(){
     if (!inFile)       return showResult_("err", "❌ กรุณาแนบรูปติดตั้ง");
 
     setInstallLoading_(true, "⏳ กำลังย่อรูปภาพหมายเลขเครื่อง...");
-    const serialNumberPhoto = await fileToDataUrlCompressed_(snFile, { maxW: 1600, quality: 0.82 });
+    const serialNumberPhoto = await fileToDataUrlCompressed_(snFile, { maxW: 1200, quality: 0.75 });
 
     setInstallLoading_(true, "⏳ กำลังย่อรูปติดตั้ง...");
-    const installPhoto = await fileToDataUrlCompressed_(inFile, { maxW: 1600, quality: 0.82 });
+    const installPhoto = await fileToDataUrlCompressed_(inFile, { maxW: 1200, quality: 0.75 });
 
     setInstallLoading_(true, "⏳ กำลังส่งข้อมูลไปยังระบบ...");
     const payload = { userId: p.userId, dealer, btu, serialNumber, serialNumberPhoto, installPhoto };
