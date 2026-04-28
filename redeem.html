@@ -231,8 +231,9 @@ function calcRedeem_(mode, pts){
     return { ok: false, msg: "แลกรับเงิน 18-24 BTU ขั้นต่ำ 5 แต้ม" };
   }
   if (mode === "TOTAL"){
-    const tickets = Math.floor(pts / 50);
-    if (pts < 50) return { ok: false, msg: "แลกท่องเที่ยวขั้นต่ำ 50 แต้ม (1 ตั๋ว)" };
+    if (pts < 50)       return { ok: false, msg: "แลกท่องเที่ยวขั้นต่ำ 50 แต้ม (1 ตั๋ว)" };
+    if (pts % 50 !== 0) return { ok: false, msg: `ต้องกรอกทวีคูณของ 50 เท่านั้น เช่น 50, 100, 150, ... (ที่กรอก: ${pts} แต้ม)` };
+    const tickets = pts / 50;
     return { ok: true, type: "travel", tickets, label: `${pts} แต้ม = ${tickets} ตั๋วท่องเที่ยว` };
   }
   return null;
@@ -279,8 +280,8 @@ function refreshHint_(){
     hint.textContent = "5–9 แต้ม = ×300 บาท | 10+ แต้ม = ×450 บาท";
     if (inp) inp.placeholder = "ขั้นต่ำ 5 แต้ม";
   } else if (mode === "TOTAL"){
-    hint.textContent = "ครบทุก 50 แต้ม (รวมทั้ง 2 BTU) = 1 ตั๋วท่องเที่ยว";
-    if (inp) inp.placeholder = "ขั้นต่ำ 50 แต้ม";
+    hint.textContent = "กรอกทวีคูณของ 50 เท่านั้น: 50, 100, 150, 200, ... — ทุก 50 แต้ม = 1 ตั๋ว";
+    if (inp) inp.placeholder = "เช่น 50, 100, 150 ...";
   } else {
     hint.textContent = "เงื่อนไขในการแลกแต้ม";
     if (inp) inp.placeholder = "ขั้นต่ำ 5 แต้ม";
@@ -368,6 +369,8 @@ async function submitRedeem(){
 
     const chk = calcRedeem_(mode, pts);
     if (!chk || !chk.ok) return popup(chk?.msg || "เงื่อนไขไม่ถูกต้อง", "เงื่อนไขไม่ถูกต้อง ❌");
+
+    // ไม่มี check pts < 500 แล้ว — ใช้ calcRedeem_ เป็น single source of truth
 
     setRedeemLoading_(true, "⏳ กำลังทำรายการแลกแต้ม...");
     const r = await apiPost("redeems", "create", { userId: p.userId, btu: mode, points: pts });
