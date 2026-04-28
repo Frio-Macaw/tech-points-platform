@@ -45,22 +45,14 @@
 
 <div class="reg-wrap">
 
-  <div style="text-align:center;margin-bottom:16px">
-    <img src="Frio_logo_1.png" alt="FRIO" style="height:54px;object-fit:contain"
-      onerror="this.style.display='none'">
-  </div>
-
   <div class="reg-title">ลงทะเบียนช่าง</div>
 
   <div class="reg-card">
 
     <div class="reg-toprow">
-      <span class="reg-badge">Members</span>
-      <div style="display:flex;align-items:center;gap:8px">
-        <span id="displayName" style="font-size:13px;color:#3392D2;font-weight:500"></span>
-        <img id="profilePic" class="reg-avatar" src="" alt=""
-          onerror="this.style.background='#F5D547';this.src=''">
-      </div>
+      <span id="displayName" style="font-size:13px;color:#3392D2;font-weight:600"></span>
+      <img id="profilePic" class="reg-avatar" src="" alt=""
+        onerror="this.style.background='#F5D547';this.removeAttribute('src')">
     </div>
 
     <label class="reg-label">ชื่อจริง <span class="reg-req">*</span></label>
@@ -336,4 +328,23 @@ window.addEventListener("load", () => {
     const nameEl = document.getElementById("displayName");
     if (nameEl) nameEl.textContent = p.displayName || "";
   }, 100);
-  setTimeout((
+  setTimeout(() => clearInterval(waitPic), 8000);
+
+  setTimeout(() => loadDraftFromSheet_().catch(() => {}), 300);
+});
+
+</script>
+
+<!-- Popup Modal -->
+<div id="modalOverlay" class="modal-overlay" onclick="closePopup()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3 id="modalTitle">สำเร็จ</h3>
+    <p id="modalMsg">บันทึกเสร็จสิ้นแล้ว</p>
+    <div class="actions">
+      <button class="btn primary" onclick="closePopup()">ตกลง</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
