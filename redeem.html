@@ -11,35 +11,53 @@
     .rdm-title { text-align: center; font-size: 22px; font-weight: 700; color: #02497E; margin-bottom: 16px; }
     .rdm-card { background: #2e2e2e; border-radius: 16px; padding: 16px; }
 
-    .rdm-uid { font-size: 12px; color: #888; margin-bottom: 14px; }
+    .rdm-uid { font-size: 12px; color: #888; margin-bottom: 12px; }
 
-    /* กล่องแสดงแต้มคงเหลือ - 2 BTU + รวม */
-    .rdm-bal-row { display: flex; gap: 8px; margin-bottom: 10px; }
-    .rdm-bal-box { flex: 1; border-radius: 10px; padding: 10px 10px 12px; }
-    .rdm-bal-box.b1 { background: #3392D2; }
-    .rdm-bal-box.b2 { background: #02497E; }
-    .rdm-bal-title { font-size: 12px; color: #fff; font-weight: 700; margin-bottom: 2px; }
-    .rdm-bal-sub { font-size: 10px; color: rgba(255,255,255,0.7); margin-bottom: 6px; }
-    .rdm-bal-val { display: flex; align-items: center; gap: 5px; }
+    /* ===== ส่วนแสดงแต้ม (เหมือน points.html) ===== */
+    .rdm-summary {
+      background: #22c55e; border-radius: 10px;
+      padding: 14px 16px; margin-bottom: 8px;
+    }
+    .rdm-sum-row { font-size: 14px; color: #fff; font-weight: 600; margin-bottom: 5px; }
+    .rdm-sum-row:last-child { margin-bottom: 0; }
+
+    .rdm-date { font-size: 12px; color: #E8B800; margin-bottom: 12px; padding-left: 2px; }
+
+    .rdm-btu-row { display: flex; gap: 10px; margin-bottom: 6px; }
+    .rdm-btu-box { flex: 1; border-radius: 10px; padding: 12px; }
+    .rdm-btu-box.b1 { background: #3392D2; }
+    .rdm-btu-box.b2 { background: #02497E; }
+    .rdm-btu-title { font-size: 13px; color: #fff; font-weight: 700; margin-bottom: 2px; }
+    .rdm-btu-sub { font-size: 10px; color: rgba(255,255,255,0.7); margin-bottom: 6px; }
+    .rdm-btu-val { display: flex; align-items: center; gap: 5px; }
     .rdm-coin {
-      width: 18px; height: 18px; background: #F5C842; border-radius: 50%;
+      width: 20px; height: 20px; background: #F5C842; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-size: 9px; font-weight: 700; color: #7a5700; flex-shrink: 0;
+      font-size: 10px; font-weight: 700; color: #7a5700; flex-shrink: 0;
     }
-    .rdm-bal-num { font-size: 17px; font-weight: 800; color: #fff; }
-    .rdm-bal-unit { font-size: 11px; color: rgba(255,255,255,0.8); }
+    .rdm-btu-num { font-size: 18px; font-weight: 800; color: #fff; }
+    .rdm-btu-unit { font-size: 11px; color: rgba(255,255,255,0.8); }
 
-    /* กล่องรวมทั้งหมด */
-    .rdm-bal-total {
-      background: #3d3d3d; border-radius: 10px;
-      padding: 10px 14px; margin-bottom: 16px;
-      display: flex; align-items: center; justify-content: space-between;
+    /* อัตราแลกใต้กล่อง BTU */
+    .rdm-rate-row { display: flex; gap: 10px; margin-bottom: 14px; }
+    .rdm-rate-box { flex: 1; background: #3a3a3a; border-radius: 8px; padding: 8px 10px; }
+    .rdm-rate-line { font-size: 10px; color: #b0b8c1; line-height: 1.5; }
+    .rdm-rate-line b { color: #F5C842; }
+
+    /* ตั๋วท่องเที่ยว row เดียวกว้างเต็ม */
+    .rdm-rate-travel {
+      background: #3a3a3a; border-radius: 8px; padding: 8px 12px; margin-bottom: 14px;
     }
-    .rdm-bal-total-label { font-size: 13px; color: #F8FAFC; }
-    .rdm-bal-total-val { font-size: 17px; font-weight: 800; color: #22c55e; }
+    .rdm-rate-travel .rdm-rate-line { font-size: 11px; }
 
-    /* Form */
-    .rdm-label { font-size: 13px; color: #F8FAFC; display: block; margin-bottom: 4px; margin-top: 14px; font-weight: 500; }
+    .rdm-divider { height: 1px; background: #444; margin: 16px 0 14px; }
+
+    /* ===== ฟอร์มแลกแต้ม ===== */
+    .rdm-label {
+      font-size: 13px; color: #F8FAFC; display: block;
+      margin-bottom: 4px; margin-top: 14px; font-weight: 500;
+    }
+    .rdm-label-note { font-size: 11px; color: #888; font-weight: 400; }
     .rdm-req { color: #ff4444; }
     .rdm-input {
       width: 100%; box-sizing: border-box;
@@ -51,20 +69,34 @@
     select.rdm-input { color: #F8FAFC; }
     select.rdm-input option { color: #000; background: #fff; }
 
-    /* hint */
-    .rdm-hint { font-size: 12px; color: #E8B800; margin-top: 8px; padding-left: 2px; }
+    /* กล่องคำนวณ live */
+    .rdm-calc {
+      background: #1e3a2e; border-radius: 8px;
+      padding: 10px 12px; margin-top: 8px; display: none;
+    }
+    .rdm-calc-main { font-size: 15px; font-weight: 700; color: #4ade80; }
+    .rdm-calc-sub { font-size: 11px; color: #86efac; margin-top: 3px; }
+
+    /* hint เงื่อนไข */
+    .rdm-cond { display: flex; align-items: flex-start; gap: 7px; margin-top: 10px; }
+    .rdm-cond-dot {
+      width: 16px; height: 16px; background: #ef4444; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; color: #fff; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+    }
+    .rdm-cond-text { font-size: 12px; color: #E8B800; line-height: 1.5; }
 
     .rdm-hr { height: 1px; background: #444; margin: 20px 0 14px; }
 
-    /* ปุ่มยืนยัน - แดง */
+    /* ปุ่มยืนยัน */
     .rdm-btn-confirm {
-      width: 100%; background: #ef4444; border: none; border-radius: 8px;
+      width: 100%; background: #22c55e; border: none; border-radius: 8px;
       padding: 13px; color: #fff; font-size: 15px; font-weight: 700;
       margin-bottom: 10px; cursor: pointer;
     }
     .rdm-btn-confirm:disabled { opacity: 0.6; }
 
-    /* ปุ่มกลับเมนู */
+    /* ปุ่มกลับ */
     .rdm-btn-back {
       width: 100%; background: #FFF9C4; border: none; border-radius: 8px;
       padding: 13px; color: #02497E; font-size: 15px; font-weight: 700; cursor: pointer;
@@ -74,7 +106,7 @@
 <body>
 
 <div class="rdm-wrap">
-  <div class="rdm-title">แลกแต้ม</div>
+  <div class="rdm-title">แลกแต้มสะสม</div>
 
   <div class="rdm-card">
 
@@ -82,47 +114,92 @@
 
     <div id="redeemStatusBox" class="result-box" style="display:none"></div>
 
-    <!-- แต้มคงเหลือ 2 กล่อง BTU -->
-    <div class="rdm-bal-row">
-      <div class="rdm-bal-box b1">
-        <div class="rdm-bal-title">09 - 12 BTU</div>
-        <div class="rdm-bal-sub">คงเหลือ:</div>
-        <div class="rdm-bal-val">
-          <div class="rdm-coin">P</div>
-          <span class="rdm-bal-num" id="balance0912">-</span>
-          <span class="rdm-bal-unit">แต้ม</span>
+    <!-- ===== แสดงแต้ม (โหลดอัตโนมัติ) ===== -->
+    <div id="balanceSection" style="display:none">
+
+      <div class="rdm-summary">
+        <div class="rdm-sum-row">แต้มสะสมทั้งหมด: <span id="plus">-</span> แต้ม</div>
+        <div class="rdm-sum-row">ใช้ไป: <span id="minus">-</span></div>
+        <div class="rdm-sum-row">คงเหลือ: <span id="balanceTotal">-</span> แต้ม</div>
+      </div>
+
+      <div id="lastDateRow" class="rdm-date" style="display:none">
+        อัปเดตล่าสุด <span id="lastDate"></span>
+      </div>
+
+      <div class="rdm-btu-row">
+        <div class="rdm-btu-box b1">
+          <div class="rdm-btu-title">09 - 12 BTU</div>
+          <div class="rdm-btu-sub">แต้มคงเหลือ:</div>
+          <div class="rdm-btu-val">
+            <div class="rdm-coin">P</div>
+            <span class="rdm-btu-num" id="balance0912">-</span>
+            <span class="rdm-btu-unit">แต้ม</span>
+          </div>
+        </div>
+        <div class="rdm-btu-box b2">
+          <div class="rdm-btu-title">18 - 24 BTU</div>
+          <div class="rdm-btu-sub">แต้มคงเหลือ:</div>
+          <div class="rdm-btu-val">
+            <div class="rdm-coin">P</div>
+            <span class="rdm-btu-num" id="balance1824">-</span>
+            <span class="rdm-btu-unit">แต้ม</span>
+          </div>
         </div>
       </div>
-      <div class="rdm-bal-box b2">
-        <div class="rdm-bal-title">18 - 24 BTU</div>
-        <div class="rdm-bal-sub">คงเหลือ:</div>
-        <div class="rdm-bal-val">
-          <div class="rdm-coin">P</div>
-          <span class="rdm-bal-num" id="balance1824">-</span>
-          <span class="rdm-bal-unit">แต้ม</span>
+
+      <!-- อัตราแลก BTU -->
+      <div class="rdm-rate-row">
+        <div class="rdm-rate-box">
+          <div class="rdm-rate-line">💰 09-12 BTU</div>
+          <div class="rdm-rate-line">5–9 แต้ม → <b>×200 บาท</b></div>
+          <div class="rdm-rate-line">10+ แต้ม → <b>×250 บาท</b></div>
+        </div>
+        <div class="rdm-rate-box">
+          <div class="rdm-rate-line">💰 18-24 BTU</div>
+          <div class="rdm-rate-line">5–9 แต้ม → <b>×300 บาท</b></div>
+          <div class="rdm-rate-line">10+ แต้ม → <b>×450 บาท</b></div>
         </div>
       </div>
-    </div>
 
-    <!-- แต้มรวมทั้งหมด -->
-    <div class="rdm-bal-total">
-      <span class="rdm-bal-total-label">แต้มคงเหลือรวมทั้งหมด</span>
-      <span class="rdm-bal-total-val"><span id="balanceTotal">-</span> แต้ม</span>
-    </div>
+      <!-- อัตราแลกท่องเที่ยว -->
+      <div class="rdm-rate-travel">
+        <div class="rdm-rate-line">✈️ แลกท่องเที่ยว — รวม BTU ทั้งสองประเภท ครบทุก <b>50 แต้ม = 1 ตั๋ว</b></div>
+        <div class="rdm-rate-line" style="margin-top:3px">คุณมีแต้มรวม <b id="totalForTravel" style="color:#F5C842">-</b> แต้ม = <b id="ticketsAvail" style="color:#F5C842">-</b> ตั๋ว</div>
+      </div>
 
-    <!-- ฟอร์มแลกแต้ม -->
-    <label class="rdm-label">ประเภทการแลกแต้ม <span class="rdm-req">*</span></label>
+    </div>
+    <!-- ============================= -->
+
+    <div class="rdm-divider"></div>
+
+    <!-- ===== ฟอร์มแลก ===== -->
+    <label class="rdm-label">
+      รายการแลกแต้ม
+      <span class="rdm-label-note">(เลือกได้ครั้งละ 1 รายการ)</span>
+      <span class="rdm-req"> *</span>
+    </label>
     <select class="rdm-input" id="btu" required>
       <option value="">เลือก</option>
-      <option value="09-12 BTU">09-12 BTU</option>
-      <option value="18-24 BTU">18-24 BTU</option>
-      <option value="TOTAL">แต้มรวมทั้งหมด (ขั้นต่ำ 500 แต้ม)</option>
+      <option value="09-12 BTU">แลกรับเงิน 09-12 BTU</option>
+      <option value="18-24 BTU">แลกรับเงิน 18-24 BTU</option>
+      <option value="TOTAL">แลกท่องเที่ยว (สะสมครบทุก 50 ชุด)</option>
     </select>
 
     <label class="rdm-label">จำนวนแต้มที่ต้องการใช้ <span class="rdm-req">*</span></label>
-    <input class="rdm-input" id="points" type="number" min="1" step="1" placeholder="เช่น 10">
+    <input class="rdm-input" id="points" type="number" min="1" step="1" placeholder="ขั้นต่ำ 5 แต้ม">
 
-    <div id="redeemHint" class="rdm-hint">* เมื่อยืนยันแลก แต้มจะถูกหักทันทีเพื่อ "จองสิทธิ์"</div>
+    <!-- กล่องคำนวณ live -->
+    <div id="calcBox" class="rdm-calc">
+      <div class="rdm-calc-main" id="calcMain"></div>
+      <div class="rdm-calc-sub" id="calcSub"></div>
+    </div>
+
+    <!-- เงื่อนไข -->
+    <div class="rdm-cond">
+      <div class="rdm-cond-dot">!</div>
+      <span id="redeemHint" class="rdm-cond-text">เงื่อนไขในการแลกแต้ม</span>
+    </div>
 
     <div class="rdm-hr"></div>
     <button id="btnRedeemSave" class="rdm-btn-confirm" onclick="submitRedeem()">ยืนยันแลกแต้ม</button>
@@ -135,6 +212,76 @@
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <script src="liff-starter.js?v=20260428_1"></script>
 <script>
+
+// ===== คำนวณมูลค่าการแลก =====
+function calcRedeem_(mode, pts){
+  if (mode === "09-12 BTU"){
+    if (pts >= 10) return { ok: true, type: "cash", value: pts * 250, rate: 250, label: `${pts} แต้ม × 250 = ${(pts*250).toLocaleString()} บาท` };
+    if (pts >= 5)  return { ok: true, type: "cash", value: pts * 200, rate: 200, label: `${pts} แต้ม × 200 = ${(pts*200).toLocaleString()} บาท` };
+    return { ok: false, msg: "แลกรับเงิน 09-12 BTU ขั้นต่ำ 5 แต้ม" };
+  }
+  if (mode === "18-24 BTU"){
+    if (pts >= 10) return { ok: true, type: "cash", value: pts * 450, rate: 450, label: `${pts} แต้ม × 450 = ${(pts*450).toLocaleString()} บาท` };
+    if (pts >= 5)  return { ok: true, type: "cash", value: pts * 300, rate: 300, label: `${pts} แต้ม × 300 = ${(pts*300).toLocaleString()} บาท` };
+    return { ok: false, msg: "แลกรับเงิน 18-24 BTU ขั้นต่ำ 5 แต้ม" };
+  }
+  if (mode === "TOTAL"){
+    const tickets = Math.floor(pts / 50);
+    if (pts < 50) return { ok: false, msg: "แลกท่องเที่ยวขั้นต่ำ 50 แต้ม (1 ตั๋ว)" };
+    return { ok: true, type: "travel", tickets, label: `${pts} แต้ม = ${tickets} ตั๋วท่องเที่ยว` };
+  }
+  return null;
+}
+
+function updateCalc_(){
+  const mode = document.getElementById("btu").value;
+  const pts  = Number(document.getElementById("points").value || 0);
+  const calcBox  = document.getElementById("calcBox");
+  const calcMain = document.getElementById("calcMain");
+  const calcSub  = document.getElementById("calcSub");
+
+  if (!mode || !pts || pts <= 0){ calcBox.style.display = "none"; return; }
+
+  const res = calcRedeem_(mode, pts);
+  if (!res){ calcBox.style.display = "none"; return; }
+
+  calcBox.style.display = "block";
+  if (res.ok){
+    calcMain.textContent = "💰 " + res.label;
+    calcSub.textContent  = res.type === "travel"
+      ? `ใช้แต้ม ${pts} จาก ${document.getElementById("balanceTotal").textContent} แต้มที่มี`
+      : `อัตรา ${res.rate} บาท/แต้ม`;
+    calcBox.style.background = "#1e3a2e";
+    calcMain.style.color = "#4ade80";
+  } else {
+    calcMain.textContent = "⚠️ " + res.msg;
+    calcSub.textContent  = "";
+    calcBox.style.background = "#3a1e1e";
+    calcMain.style.color = "#f87171";
+  }
+}
+
+function refreshHint_(){
+  const mode = document.getElementById("btu").value;
+  const hint = document.getElementById("redeemHint");
+  const inp  = document.getElementById("points");
+  if (!hint) return;
+
+  if (mode === "09-12 BTU"){
+    hint.textContent = "5–9 แต้ม = ×200 บาท | 10+ แต้ม = ×250 บาท";
+    if (inp) inp.placeholder = "ขั้นต่ำ 5 แต้ม";
+  } else if (mode === "18-24 BTU"){
+    hint.textContent = "5–9 แต้ม = ×300 บาท | 10+ แต้ม = ×450 บาท";
+    if (inp) inp.placeholder = "ขั้นต่ำ 5 แต้ม";
+  } else if (mode === "TOTAL"){
+    hint.textContent = "ครบทุก 50 แต้ม (รวมทั้ง 2 BTU) = 1 ตั๋วท่องเที่ยว";
+    if (inp) inp.placeholder = "ขั้นต่ำ 50 แต้ม";
+  } else {
+    hint.textContent = "เงื่อนไขในการแลกแต้ม";
+    if (inp) inp.placeholder = "ขั้นต่ำ 5 แต้ม";
+  }
+}
+
 function showRedeemStatus_(type, msg){
   const box = document.getElementById("redeemStatusBox");
   if (!box) return;
@@ -159,33 +306,45 @@ function setRedeemLoading_(isLoading, msg){
   if (isLoading && msg) showRedeemStatus_("loading", msg);
 }
 
-function refreshRedeemHint_(){
-  const mode = document.getElementById("btu").value;
-  const hint = document.getElementById("redeemHint");
-  if (!hint) return;
-  if (mode === "TOTAL"){
-    hint.textContent = "* แลกแบบแต้มรวม ต้องใช้ขั้นต่ำ 500 แต้ม ระบบจะตัดแต้มเก่าไปใหม่";
-  } else if (mode === "09-12 BTU" || mode === "18-24 BTU"){
-    hint.textContent = "* แลกตาม BTU ที่เลือก ระบบจะตัดแต้มเก่าไปใหม่ใน BTU นั้น";
-  } else {
-    hint.textContent = "* เมื่อยืนยันแลก แต้มจะถูกหักทันทีเพื่อ \"จองสิทธิ์\"";
-  }
+function updateTicketDisplay_(b0912, b1824, total){
+  const t = document.getElementById("totalForTravel");
+  const tk = document.getElementById("ticketsAvail");
+  if (t)  t.textContent  = total;
+  if (tk) tk.textContent = Math.floor(total / 50);
 }
 
 async function loadRedeemBalances(){
   try{
     const p = await waitProfile_();
     if (!p) return;
+
     showRedeemStatus_("loading", "⏳ กำลังโหลดแต้มคงเหลือ...");
     const r = await apiPost("points", "balance", { userId: p.userId });
+
     if (!r || !r.ok){
       showRedeemStatus_("err", "❌ โหลดแต้มไม่สำเร็จ");
       return;
     }
-    document.getElementById("balance0912").textContent  = r.balance0912 ?? 0;
-    document.getElementById("balance1824").textContent  = r.balance1824 ?? 0;
-    document.getElementById("balanceTotal").textContent = r.balance ?? 0;
+
+    const b0912 = r.balance0912 ?? 0;
+    const b1824 = r.balance1824 ?? 0;
+    const total = r.balance ?? 0;
+
+    document.getElementById("balance0912").textContent  = b0912;
+    document.getElementById("balance1824").textContent  = b1824;
+    document.getElementById("balanceTotal").textContent = total;
+    document.getElementById("plus").textContent         = r.plus ?? 0;
+    document.getElementById("minus").textContent        = r.minus ?? 0;
+
+    if (r.lastCreatedAt){
+      document.getElementById("lastDate").textContent     = r.lastCreatedAt;
+      document.getElementById("lastDateRow").style.display = "block";
+    }
+
+    updateTicketDisplay_(b0912, b1824, total);
+    document.getElementById("balanceSection").style.display = "block";
     showRedeemStatus_("ok", "✅ โหลดแต้มคงเหลือเรียบร้อยแล้ว");
+
   } catch(err){
     showRedeemStatus_("err", "❌ เกิดข้อผิดพลาด: " + String(err));
   }
@@ -199,23 +358,23 @@ async function submitRedeem(){
     const mode = document.getElementById("btu").value;
     const pts  = Number(document.getElementById("points").value || 0);
 
-    if (!mode) return toast("กรุณาเลือกประเภทการแลกแต้ม", false);
+    if (!mode) return toast("กรุณาเลือกรายการแลกแต้ม", false);
     if (!Number.isFinite(pts) || pts <= 0) return toast("กรอกจำนวนแต้มให้ถูกต้อง", false);
 
-    if (mode === "TOTAL" && pts < 500){
-      return popup("แลกแต้มรวมได้ขั้นต่ำ 500 แต้ม", "เงื่อนไขไม่ถูกต้อง ❌");
-    }
+    const chk = calcRedeem_(mode, pts);
+    if (!chk || !chk.ok) return popup(chk?.msg || "เงื่อนไขไม่ถูกต้อง", "เงื่อนไขไม่ถูกต้อง ❌");
 
     setRedeemLoading_(true, "⏳ กำลังทำรายการแลกแต้ม...");
     const r = await apiPost("redeems", "create", { userId: p.userId, btu: mode, points: pts });
 
     if (r && r.ok){
-      popup(`แลกสำเร็จ ✅ คงเหลือรวม ${r.balanceAfter} แต้ม`);
+      popup(`แลกสำเร็จ ✅\n${chk.label}\nคงเหลือรวม ${r.balanceAfter} แต้ม`);
       document.getElementById("points").value = "";
+      document.getElementById("calcBox").style.display = "none";
       await loadRedeemBalances();
     } else {
       const msgMap = {
-        "TOTAL_REDEEM_MIN_500":      "แลกแต้มรวมได้ขั้นต่ำ 500 แต้ม",
+        "TOTAL_REDEEM_MIN_500":       "แลกท่องเที่ยวขั้นต่ำ 50 แต้ม",
         "INSUFFICIENT_TOTAL_BALANCE": "แต้มรวมคงเหลือไม่พอ",
         "INSUFFICIENT_BTU_BALANCE":   "แต้มคงเหลือของ BTU ที่เลือกไม่พอ"
       };
@@ -229,7 +388,6 @@ async function submitRedeem(){
 }
 
 window.addEventListener("load", () => {
-  // แสดง userId
   const waitUid = setInterval(() => {
     const p = window.__LIFF_PROFILE__;
     if (!p) return;
@@ -239,15 +397,17 @@ window.addEventListener("load", () => {
   }, 100);
   setTimeout(() => clearInterval(waitUid), 8000);
 
-  // auto-load แต้ม
   setTimeout(() => {
     loadRedeemBalances().catch(() => {});
-    refreshRedeemHint_();
+    refreshHint_();
   }, 400);
 });
 
 document.addEventListener("change", (e) => {
-  if (e.target && e.target.id === "btu") refreshRedeemHint_();
+  if (e.target.id === "btu"){ refreshHint_(); updateCalc_(); }
+});
+document.addEventListener("input", (e) => {
+  if (e.target.id === "points") updateCalc_();
 });
 </script>
 
