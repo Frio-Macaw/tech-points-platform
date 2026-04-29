@@ -182,14 +182,15 @@ async function loadBalance(){
     document.getElementById("minus").textContent       = r.minus ?? 0;
     document.getElementById("balance").textContent     = r.balance ?? 0;
 
-    // วันที่ล่าสุดจาก Points > createdAt (ถ้า backend ส่งมา)
-    if (r.lastCreatedAt){
-      document.getElementById("lastDate").textContent     = r.lastCreatedAt;
-      document.getElementById("lastDateRow").style.display = "block";
-    }
-
     document.getElementById("summaryBox").style.display = "block";
-    showPointsStatus_("ok", "✅ โหลดข้อมูลแต้มล่าสุดเรียบร้อยแล้ว");
+
+    if (r.lastCreatedAt){
+      document.getElementById("lastDate").textContent      = r.lastCreatedAt;
+      document.getElementById("lastDateRow").style.display = "block";
+      showPointsStatus_("ok", "✅ สะสมแต้มล่าสุด: " + r.lastCreatedAt);
+    } else {
+      showPointsStatus_("ok", "✅ โหลดข้อมูลแต้มเรียบร้อยแล้ว");
+    }
 
   } catch(err){
     showPointsStatus_("err", "❌ เกิดข้อผิดพลาด: " + String(err));
