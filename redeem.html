@@ -231,7 +231,7 @@ function calcRedeem_(mode, pts){
     return { ok: false, msg: "แลกรับเงิน 18-24 BTU ขั้นต่ำ 5 แต้ม" };
   }
   if (mode === "TOTAL"){
-    if (pts < 49)       return { ok: false, msg: "แลกท่องเที่ยวขั้นต่ำ 50 แต้ม (1 ตั๋ว)" };
+    if (pts < 50)       return { ok: false, msg: "แลกท่องเที่ยวขั้นต่ำ 50 แต้ม (1 ตั๋ว)" };
     if (pts % 50 !== 0) return { ok: false, msg: `แลกตั๋วเที่ยวกรอกทุกๆ 50 แต้มเท่านั้น เช่น 50, 100, 150, ... (ที่กรอก: ${pts} แต้ม)` };
     const tickets = pts / 50;
     return { ok: true, type: "travel", tickets, label: `${pts} แต้ม = ${tickets} ตั๋วท่องเที่ยว` };
