@@ -173,38 +173,38 @@
         <div class="rdm-rate-line" style="margin-top:3px">คุณมีแต้มรวม <b id="totalForTravel" style="color:#F5C842">-</b> แต้ม = <b id="ticketsAvail" style="color:#F5C842">-</b> ตั๋ว</div>
       </div>
 
+      <div class="rdm-divider"></div>
+
+      <!-- ===== ฟอร์มแลก (อยู่ใน balanceSection) ===== -->
+      <label class="rdm-label">
+        รายการแลกแต้ม
+        <span class="rdm-label-note">(เลือกได้ครั้งละ 1 รายการ)</span>
+        <span class="rdm-req"> *</span>
+      </label>
+      <select class="rdm-input" id="btu" required>
+        <option value="">เลือก</option>
+        <option value="09-12 BTU">แลกรับเงิน 09-12 BTU</option>
+        <option value="18-24 BTU">แลกรับเงิน 18-24 BTU</option>
+        <option value="TOTAL">แลกท่องเที่ยว (สะสมครบทุก 50 ชุด)</option>
+      </select>
+
+      <label class="rdm-label">จำนวนแต้มที่ต้องการใช้ <span class="rdm-req">*</span></label>
+      <input class="rdm-input" id="points" type="number" min="1" step="50" placeholder="ขั้นต่ำ 5 แต้ม">
+
+      <!-- กล่องคำนวณ live -->
+      <div id="calcBox" class="rdm-calc">
+        <div class="rdm-calc-main" id="calcMain"></div>
+        <div class="rdm-calc-sub" id="calcSub"></div>
+      </div>
+
+      <!-- เงื่อนไข -->
+      <div class="rdm-cond">
+        <div class="rdm-cond-dot">!</div>
+        <span id="redeemHint" class="rdm-cond-text">เงื่อนไขในการแลกแต้ม</span>
+      </div>
+
     </div>
     <!-- ============================= -->
-
-    <div class="rdm-divider"></div>
-
-    <!-- ===== ฟอร์มแลก ===== -->
-    <label class="rdm-label">
-      รายการแลกแต้ม
-      <span class="rdm-label-note">(เลือกได้ครั้งละ 1 รายการ)</span>
-      <span class="rdm-req"> *</span>
-    </label>
-    <select class="rdm-input" id="btu" required>
-      <option value="">เลือก</option>
-      <option value="09-12 BTU">แลกรับเงิน 09-12 BTU</option>
-      <option value="18-24 BTU">แลกรับเงิน 18-24 BTU</option>
-      <option value="TOTAL">แลกท่องเที่ยว (สะสมครบทุก 50 ชุด)</option>
-    </select>
-
-    <label class="rdm-label">จำนวนแต้มที่ต้องการใช้ <span class="rdm-req">*</span></label>
-    <input class="rdm-input" id="points" type="number" min="1" step="1" placeholder="ขั้นต่ำ 5 แต้ม">
-
-    <!-- กล่องคำนวณ live -->
-    <div id="calcBox" class="rdm-calc">
-      <div class="rdm-calc-main" id="calcMain"></div>
-      <div class="rdm-calc-sub" id="calcSub"></div>
-    </div>
-
-    <!-- เงื่อนไข -->
-    <div class="rdm-cond">
-      <div class="rdm-cond-dot">!</div>
-      <span id="redeemHint" class="rdm-cond-text">เงื่อนไขในการแลกแต้ม</span>
-    </div>
 
     <div class="rdm-hr"></div>
     <button id="btnRedeemSave" class="rdm-btn-confirm" onclick="submitRedeem()">ยืนยันแลกแต้ม</button>
@@ -382,9 +382,11 @@ async function submitRedeem(){
       await loadRedeemBalances();
     } else {
       const msgMap = {
-        "TOTAL_REDEEM_MIN_500":       "แลกท่องเที่ยวขั้นต่ำ 50 แต้ม",
-        "INSUFFICIENT_TOTAL_BALANCE": "แต้มรวมคงเหลือไม่พอ",
-        "INSUFFICIENT_BTU_BALANCE":   "แต้มคงเหลือของ BTU ที่เลือกไม่พอ"
+        "TOTAL_REDEEM_MIN_500":                  "แลกท่องเที่ยวขั้นต่ำ 50 แต้ม (1 ตั๋ว)",
+        "TOTAL_REDEEM_MIN_50":                   "แลกท่องเที่ยวขั้นต่ำ 50 แต้ม (1 ตั๋ว)",
+        "TOTAL_REDEEM_MUST_BE_MULTIPLE_OF_50":   "จำนวนแต้มต้องเป็นทวีคูณของ 50 เช่น 50, 100, 150 ...",
+        "INSUFFICIENT_TOTAL_BALANCE":            "แต้มรวมคงเหลือไม่พอ",
+        "INSUFFICIENT_BTU_BALANCE":              "แต้มคงเหลือของ BTU ที่เลือกไม่พอ"
       };
       popup(msgMap[r?.error] || ("แลกไม่สำเร็จ: " + (r?.error || "unknown")), "เกิดข้อผิดพลาด ❌");
     }
