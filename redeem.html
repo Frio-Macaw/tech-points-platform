@@ -157,13 +157,13 @@
       <div class="rdm-rate-row">
         <div class="rdm-rate-box">
           <div class="rdm-rate-line">💰 09-12 BTU</div>
-          <div class="rdm-rate-line">5–9 แต้ม → <b>×200 บาท / 1 แต้ม</b></div>
-          <div class="rdm-rate-line">10+ แต้ม → <b>×250 บาท / 1 แต้ม</b></div>
+          <div class="rdm-rate-line">5–9 แต้ม → <b>×200 บาท</b></div>
+          <div class="rdm-rate-line">10+ แต้ม → <b>×250 บาท</b></div>
         </div>
         <div class="rdm-rate-box">
           <div class="rdm-rate-line">💰 18-24 BTU</div>
-          <div class="rdm-rate-line">5–9 แต้ม → <b>×300 บาท / 1 แต้ม</b></div>
-          <div class="rdm-rate-line">10+ แต้ม → <b>×450 บาท / 1 แต้ม</b></div>
+          <div class="rdm-rate-line">5–9 แต้ม → <b>×300 บาท</b></div>
+          <div class="rdm-rate-line">10+ แต้ม → <b>×450 บาท</b></div>
         </div>
       </div>
 
@@ -231,8 +231,8 @@ function calcRedeem_(mode, pts){
     return { ok: false, msg: "แลกรับเงิน 18-24 BTU ขั้นต่ำ 5 แต้ม" };
   }
   if (mode === "TOTAL"){
-    if (pts < 50)       return { ok: false, msg: "แลกท่องเที่ยวขั้นต่ำ 50 แต้ม (1 ตั๋ว)" };
-    if (pts % 50 !== 0) return { ok: false, msg: `ต้องกรอกทวีคูณของ 50 เท่านั้น เช่น 50, 100, 150, ... (ที่กรอก: ${pts} แต้ม)` };
+    if (pts < 49)       return { ok: false, msg: "แลกท่องเที่ยวขั้นต่ำ 50 แต้ม (1 ตั๋ว)" };
+    if (pts % 50 !== 0) return { ok: false, msg: `แลกตั๋วเที่ยวกรอกทุกๆ 50 แต้มเท่านั้น เช่น 50, 100, 150, ... (ที่กรอก: ${pts} แต้ม)` };
     const tickets = pts / 50;
     return { ok: true, type: "travel", tickets, label: `${pts} แต้ม = ${tickets} ตั๋วท่องเที่ยว` };
   }
@@ -274,13 +274,13 @@ function refreshHint_(){
   if (!hint) return;
 
   if (mode === "09-12 BTU"){
-    hint.textContent = "5–9 แต้ม = ×200 บาท | 10+ แต้ม = ×250 บาท";
+    hint.textContent = "5–9 แต้ม รับเงินคืนแต้มละ 200 บาท | 10+ แต้ม รับเงินคืนแต้มละ 250 บาท";
     if (inp) inp.placeholder = "ขั้นต่ำ 5 แต้ม";
   } else if (mode === "18-24 BTU"){
-    hint.textContent = "5–9 แต้ม = ×300 บาท | 10+ แต้ม = ×450 บาท";
+    hint.textContent = "5–9 แต้ม รับเงินคืนแต้มละ 300 บาท | 10+ แต้ม รับเงินคืนแต้มละ 450 บาท";
     if (inp) inp.placeholder = "ขั้นต่ำ 5 แต้ม";
   } else if (mode === "TOTAL"){
-    hint.textContent = "กรอกทวีคูณของ 50 เท่านั้น: 50, 100, 150, 200, ... — ทุก 50 แต้ม = 1 ตั๋ว";
+    hint.textContent = "แลกตั๋วเที่ยวกรอกทุกๆ 50 แต้มเท่านั้น: เช่น 50, 100, 150 — ทุก 50 แต้ม = 1 ตั๋ว";
     if (inp) inp.placeholder = "เช่น 50, 100, 150 ...";
   } else {
     hint.textContent = "เงื่อนไขในการแลกแต้ม";
