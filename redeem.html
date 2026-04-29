@@ -342,14 +342,16 @@ async function loadRedeemBalances(){
     document.getElementById("plus").textContent         = r.plus ?? 0;
     document.getElementById("minus").textContent        = r.minus ?? 0;
 
-    if (r.lastCreatedAt){
-      document.getElementById("lastDate").textContent     = r.lastCreatedAt;
-      document.getElementById("lastDateRow").style.display = "block";
-    }
-
     updateTicketDisplay_(b0912, b1824, total);
     document.getElementById("balanceSection").style.display = "block";
-    showRedeemStatus_("ok", "✅ โหลดแต้มคงเหลือเรียบร้อยแล้ว");
+
+    if (r.lastCreatedAt){
+      document.getElementById("lastDate").textContent      = r.lastCreatedAt;
+      document.getElementById("lastDateRow").style.display = "block";
+      showRedeemStatus_("ok", "✅ สะสมแต้มล่าสุด: " + r.lastCreatedAt);
+    } else {
+      showRedeemStatus_("ok", "✅ โหลดแต้มคงเหลือเรียบร้อยแล้ว");
+    }
 
   } catch(err){
     showRedeemStatus_("err", "❌ เกิดข้อผิดพลาด: " + String(err));
